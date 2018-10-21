@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8C4EBF77-26B2-4FA6-BA24-9D458974E6B7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>LuaEngine</RootNamespace>
+    <AssemblyName>LuaEngine</AssemblyName>
+    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>发布\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>x64</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="CString">
+      <HintPath>..\Plugins\CString.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Debug.cs" />
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="ILogger.cs" />
+    <Compile Include="LuaInterface.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\Generate\DelegateFactory.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Source\Generate\LuaBinder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Source\Generate\LuaEngine_InjectTypeWrap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Source\Generate\LuaEngine_LuaInjectionStationWrap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Source\Generate\LuaEngine_LuaProfilerWrap.cs" />
+    <Compile Include="Source\Generate\LuaProfilerWrap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Source\LuaConst.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="StringBuilderCache.cs" />
+    <Compile Include="TestLogger.cs" />
+    <Compile Include="ToLua\BaseType\LuaInterface_EventObjectWrap.cs" />
+    <Compile Include="ToLua\BaseType\LuaInterface_LuaConstructorWrap.cs" />
+    <Compile Include="ToLua\BaseType\LuaInterface_LuaFieldWrap.cs" />
+    <Compile Include="ToLua\BaseType\LuaInterface_LuaMethodWrap.cs" />
+    <Compile Include="ToLua\BaseType\LuaInterface_LuaOutWrap.cs" />
+    <Compile Include="ToLua\BaseType\LuaInterface_LuaPropertyWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_ArrayWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_Collections_Generic_DictionaryWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_Collections_Generic_Dictionary_KeyCollectionWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_Collections_Generic_Dictionary_ValueCollectionWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_Collections_Generic_KeyValuePairWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_Collections_Generic_ListWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_Collections_IEnumeratorWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_Collections_ObjectModel_ReadOnlyCollectionWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_DelegateWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_EnumWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_NullObjectWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_ObjectWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_StringWrap.cs" />
+    <Compile Include="ToLua\BaseType\System_TypeWrap.cs" />
+    <Compile Include="ToLua\Core\LuaAttributes.cs" />
+    <Compile Include="ToLua\Core\LuaBaseRef.cs" />
+    <Compile Include="ToLua\Core\LuaBeatEvent.cs" />
+    <Compile Include="ToLua\Core\LuaDLL.cs" />
+    <Compile Include="ToLua\Core\LuaEvent.cs" />
+    <Compile Include="ToLua\Core\LuaException.cs" />
+    <Compile Include="ToLua\Core\LuaFileUtils.cs" />
+    <Compile Include="ToLua\Core\LuaFunction.cs" />
+    <Compile Include="ToLua\Core\LuaMatchType.cs" />
+    <Compile Include="ToLua\Core\LuaMethodCache.cs" />
+    <Compile Include="ToLua\Core\LuaMisc.cs" />
+    <Compile Include="ToLua\Core\LuaStackOp.cs" />
+    <Compile Include="ToLua\Core\LuaState.cs" />
+    <Compile Include="ToLua\Core\LuaStatePtr.cs" />
+    <Compile Include="ToLua\Core\LuaStatic.cs" />
+    <Compile Include="ToLua\Core\LuaTable.cs" />
+    <Compile Include="ToLua\Core\LuaThread.cs" />
+    <Compile Include="ToLua\Core\LuaValueType.cs" />
+    <Compile Include="ToLua\Core\ObjectPool.cs" />
+    <Compile Include="ToLua\Core\ObjectTranslator.cs" />
+    <Compile Include="ToLua\Core\ToLua.cs" />
+    <Compile Include="ToLua\Core\TypeChecker.cs" />
+    <Compile Include="ToLua\Core\TypeTraits.cs" />
+    <Compile Include="ToLua\Injection\LuaInjectionStation.cs" />
+    <Compile Include="ToLua\Misc\LuaClient.cs" />
+    <Compile Include="ToLua\Misc\LuaLooper.cs" />
+    <Compile Include="ToLua\Misc\LuaProfiler.cs" />
+    <Compile Include="ToLua\Misc\LuaResLoader.cs" />
+    <Compile Include="ToLua\Reflection\LuaConstructor.cs" />
+    <Compile Include="ToLua\Reflection\LuaField.cs" />
+    <Compile Include="ToLua\Reflection\LuaMethod.cs" />
+    <Compile Include="ToLua\Reflection\LuaProperty.cs" />
+    <Compile Include="ToLua\Reflection\LuaReflection.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="tolua.dll">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="ToLua\Injection\InjectionBlackList.txt" />
+    <Content Include="ToLua\Injection\InjectionBridgeEditorInfo.xml" />
+    <Content Include="ToLua\Injection\LuaInjectionSkipPaths.txt" />
+    <Content Include="ToLua\readme.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="ToLua\Lua\Build.bat" />
+    <None Include="ToLua\Lua\cjson\util.lua" />
+    <None Include="ToLua\Lua\event.lua" />
+    <None Include="ToLua\Lua\jit\bc.lua" />
+    <None Include="ToLua\Lua\jit\bcsave.lua" />
+    <None Include="ToLua\Lua\jit\dis_arm.lua" />
+    <None Include="ToLua\Lua\jit\dis_arm64.lua" />
+    <None Include="ToLua\Lua\jit\dis_arm64be.lua" />
+    <None Include="ToLua\Lua\jit\dis_mips.lua" />
+    <None Include="ToLua\Lua\jit\dis_mips64.lua" />
+    <None Include="ToLua\Lua\jit\dis_mips64el.lua" />
+    <None Include="ToLua\Lua\jit\dis_mipsel.lua" />
+    <None Include="ToLua\Lua\jit\dis_ppc.lua" />
+    <None Include="ToLua\Lua\jit\dis_x64.lua" />
+    <None Include="ToLua\Lua\jit\dis_x86.lua" />
+    <None Include="ToLua\Lua\jit\dump.lua" />
+    <None Include="ToLua\Lua\jit\p.lua" />
+    <None Include="ToLua\Lua\jit\v.lua" />
+    <None Include="ToLua\Lua\jit\vmdef.lua" />
+    <None Include="ToLua\Lua\jit\zone.lua" />
+    <None Include="ToLua\Lua\list.lua" />
+    <None Include="ToLua\Lua\lpeg\re.lua" />
+    <None Include="ToLua\Lua\ltn12.lua" />
+    <None Include="ToLua\Lua\mime.lua" />
+    <None Include="ToLua\Lua\misc\functions.lua" />
+    <None Include="ToLua\Lua\misc\strict.lua" />
+    <None Include="ToLua\Lua\misc\utf8.lua" />
+    <None Include="ToLua\Lua\protobuf\containers.lua" />
+    <None Include="ToLua\Lua\protobuf\decoder.lua" />
+    <None Include="ToLua\Lua\protobuf\descriptor.lua" />
+    <None Include="ToLua\Lua\protobuf\encoder.lua" />
+    <None Include="ToLua\Lua\protobuf\listener.lua" />
+    <None Include="ToLua\Lua\protobuf\protobuf.lua" />
+    <None Include="ToLua\Lua\protobuf\text_format.lua" />
+    <None Include="ToLua\Lua\protobuf\type_checkers.lua" />
+    <None Include="ToLua\Lua\protobuf\wire_format.lua" />
+    <None Include="ToLua\Lua\slot.lua" />
+    <None Include="ToLua\Lua\socket.lua" />
+    <None Include="ToLua\Lua\socket\ftp.lua" />
+    <None Include="ToLua\Lua\socket\headers.lua" />
+    <None Include="ToLua\Lua\socket\http.lua" />
+    <None Include="ToLua\Lua\socket\mbox.lua" />
+    <None Include="ToLua\Lua\socket\smtp.lua" />
+    <None Include="ToLua\Lua\socket\tp.lua" />
+    <None Include="ToLua\Lua\socket\url.lua" />
+    <None Include="ToLua\Lua\System\coroutine.lua" />
+    <None Include="ToLua\Lua\System\Injection\InjectionBridgeInfo.lua" />
+    <None Include="ToLua\Lua\System\Injection\LuaInjectionBus.lua" />
+    <None Include="ToLua\Lua\System\Injection\LuaInjectionStation.lua" />
+    <None Include="ToLua\Lua\System\Reflection\BindingFlags.lua" />
+    <None Include="ToLua\Lua\System\Timer.lua" />
+    <None Include="ToLua\Lua\System\ValueType.lua" />
+    <None Include="ToLua\Lua\tolua.lua" />
+    <None Include="ToLua\Lua\typeof.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Bounds.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Color.lua" />
+    <None Include="ToLua\Lua\UnityEngine\LayerMask.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Mathf.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Plane.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Profiler.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Quaternion.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Ray.lua" />
+    <None Include="ToLua\Lua\UnityEngine\RaycastHit.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Time.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Touch.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Vector2.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Vector3.lua" />
+    <None Include="ToLua\Lua\UnityEngine\Vector4.lua" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1 Client Profile</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
