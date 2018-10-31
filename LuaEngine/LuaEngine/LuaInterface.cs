@@ -76,6 +76,24 @@ namespace LuaEngine
             mList.Clear();
             mInited = false;
         }
+        private static LuaClient mSingleton = null;
+        public static LuaClient Singleton
+        {
+            get
+            {
+                if (!mInited)
+                {
+                    throw new Exception("you should call LuaInterface.Init first!");
+                }
+                if(mSingleton == null)
+                {
+                    mSingleton = new LuaClient();
+                }
+                return mSingleton;
+            }
+        }
+
+
         public static LuaClient CreateLuaClient()
         {
             if(!mInited)
@@ -100,6 +118,8 @@ namespace LuaEngine
         }
         public static void Update(float deltaTime)
         {
+            if (mSingleton != null)
+                mSingleton.Update(deltaTime);
             for(var i = 0; i < mList.Count;++i)
             {
                 mList[i].Update(deltaTime);
@@ -107,6 +127,8 @@ namespace LuaEngine
         }
         public static void LateUpdate()
         {
+            if (mSingleton != null)
+                mSingleton.LateUpdate();
             for (var i = 0; i < mList.Count; ++i)
             {
                 mList[i].LateUpdate();
@@ -114,9 +136,11 @@ namespace LuaEngine
         }
         public static void FixedUpdate(float fixedDeltaTime)
         {
+            if (mSingleton != null)
+                mSingleton.FixedUpdate(fixedDeltaTime);
             for (var i = 0; i < mList.Count; ++i)
             {
-                mList[i].Update(fixedDeltaTime);
+                mList[i].FixedUpdate(fixedDeltaTime);
             }
         }
     }

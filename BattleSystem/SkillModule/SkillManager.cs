@@ -1,22 +1,16 @@
-﻿using System;
+﻿using BattleSystem.Util;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Xml;
 namespace BattleSystem.SkillModule
 {
     public static class SkillManager
     {
-        public static SkillAction LoadSkillAction(int templateID)
+        private static SkillReader skillReader = new SkillReader();
+        public static SkillAction LoadSkillAction(int templateID, Skill skill)
         {
-            SkillAction[] acts = new SkillAction[3];
-            acts[0] = new WaitSecondsAction(1);
-                SkillAction[] pacts = new SkillAction[3];
-                pacts[0] = new WaitSecondsAction(0.5f);
-                pacts[1] = new InstantAction(ActionType.kAoeField, new string[0]);
-                pacts[2] = new InstantAction(ActionType.kPlayEffect, new string[0]);
-                acts[1] = new ParallelAction(pacts);
-            acts[2] = new InstantAction(ActionType.kAddBuff,new string[0]);
-            SkillAction root = new SequenceAction(acts);
-            return root;
+            return skillReader.LoadSkillAction(templateID,skill);
         }
 
         public static List<BuffEffect> LoadBuffEffect(int templateID)

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BattleSystem.ObjectModule;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 namespace BattleSystem.SkillModule
@@ -13,78 +14,11 @@ namespace BattleSystem.SkillModule
         /// <returns>是否结束动作</returns>
         public abstract bool Execute(float dt);
 
-        public SkillAction Create(Skill skill,string name,string[] args)
-        {
-            SkillAction res = null;
-            ActionType type = (ActionType)Enum.Parse(typeof(ActionType), name);
-            switch(type)
-            {
-                case ActionType.kWaitSeconds:
-                    float dt;
-                    if(float.TryParse(args[0],out dt))
-                    {
-                        res = new WaitSecondsAction(dt);
-                        res.mSkill = skill;
-                    }
-                    break;
-                default:
-                    res = new InstantAction(type, args);
-                    res.mSkill = skill;
-                    break;
-            }
-            return res;
-        }
+        public virtual void Reset() { }
 
-        public abstract void Reset();
+        public abstract SkillAction Copy(Skill skill);
     }
 
-    /// <summary>
-    /// 瞬时动作
-    /// </summary>
-    public class InstantAction : SkillAction
-    {
-        private string[] Args;
-        private ActionType Type;
-        public InstantAction(ActionType t,string[] args)
-        {
-            Type = t;
-            Args = args;
-        }
-        public override bool Execute(float dt)
-        {
-            switch(Type)
-            {
-                case ActionType.kSelectTargets:
-
-                    break;
-                case ActionType.kAddBuff:
-                    break;
-                case ActionType.kAoeField:
-                    break;
-                case ActionType.kPlayAnimation:
-                    break;
-                case ActionType.kPlayEffect:
-                    break;
-                case ActionType.kPlaySound:
-                    break;
-                case ActionType.kShootBullet:
-                    break;
-                case ActionType.kSummon:
-                    break;
-                default:
-                    Trace.Assert(false, "未实现的技能行为" + Type.ToString());
-                    break;
-            }
-            Debug.Log("Execute " + Type.ToString());
-            return true;
-        }
-        public override void Reset()
-        {
-
-        }
-
-    }
-    
     /// <summary>
     /// 等待动作
     /// </summary>
@@ -108,8 +42,15 @@ namespace BattleSystem.SkillModule
         {
             mElapseTime = 0;
         }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            WaitSecondsAction action = new WaitSecondsAction(mDuration);
+            action.mSkill = skill;
+            return action;
+        }
     }
-     
+
     /// <summary>
     /// 序列动作
     /// </summary>
@@ -124,10 +65,10 @@ namespace BattleSystem.SkillModule
         }
         public override bool Execute(float dt)
         {
-            while(mIndex < mActions.Length)
+            while (mIndex < mActions.Length)
             {
                 Debug.Log("Execute SequenceAction " + mIndex);
-                if(mActions[mIndex].Execute(dt))
+                if (mActions[mIndex].Execute(dt))
                 {
                     mIndex++;
                 }
@@ -141,12 +82,23 @@ namespace BattleSystem.SkillModule
         public override void Reset()
         {
             mIndex = 0;
-            for(int i = 0; i < mActions.Length;++i)
+            for (int i = 0; i < mActions.Length; ++i)
             {
                 mActions[i].Reset();
             }
         }
 
+        public override SkillAction Copy(Skill skill)
+        {
+            SkillAction[] acts = new SkillAction[mActions.Length];
+            for(int i = 0;i < acts.Length;++i)
+            {
+                acts[i] = mActions[i].Copy(skill);
+            }
+            var seq = new SequenceAction(acts);
+            seq.mSkill = skill;
+            return seq;
+        }
     }
 
     /// <summary>
@@ -160,8 +112,8 @@ namespace BattleSystem.SkillModule
         {
             mActions = actions;
             mList = new List<SkillAction>(actions.Length);
-            
-            for(int i = actions.Length - 1; i >= 0 ; --i)
+
+            for (int i = actions.Length - 1; i >= 0; --i)
             {
                 mList.Add(actions[actions.Length - 1 - i]);
             }
@@ -188,5 +140,324 @@ namespace BattleSystem.SkillModule
                 mList.Add(action);
             }
         }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            SkillAction[] acts = new SkillAction[mActions.Length];
+            for (int i = 0; i < acts.Length; ++i)
+            {
+                acts[i] = mActions[i].Copy(skill);
+            }
+            var par = new ParallelAction(acts);
+            par.mSkill = skill;
+            return par;
+        }
     }
+
+    /// <summary>
+    /// 选择技能目标
+    /// </summary>
+    public class SelectTargetAction : SkillAction
+    {
+        public TargetFilter filter;
+        public TargetRange range;
+        public float radius;
+
+        public override bool Execute(float dt)
+        {
+            SelectTarget();
+            return true;
+        }
+        public void SelectTarget()
+        {
+
+            if (filter == TargetFilter.kSelf)
+            {
+                mSkill.target = mSkill.Owner;
+                return;
+            }
+            switch (range)
+            {
+                case TargetRange.kBattlefield:
+                    {
+
+                        switch (filter)
+                        {
+                            case TargetFilter.kLowestHPAlly:
+                                mSkill.target = BattleInterface.Instance.GetLowestHPAlly(mSkill.Owner.ID, mSkill.Owner.CampID);
+                                break;
+                            case TargetFilter.kLowestHPEnemy:
+                                mSkill.target = BattleInterface.Instance.GetLowestHPEnemy(mSkill.Owner.CampID);
+                                break;
+                            case TargetFilter.kNearestAlly:
+                                mSkill.target = BattleInterface.Instance.GetNearestAlly(mSkill.Owner.position.x, mSkill.Owner.position.y, mSkill.Owner.ID, mSkill.Owner.CampID);
+                                break;
+                            case TargetFilter.kNearestEnemy:
+                                mSkill.target = BattleInterface.Instance.GetNearestEnemy(mSkill.Owner.position.x, mSkill.Owner.position.y, mSkill.Owner.ID, mSkill.Owner.CampID);
+                                break;
+                        }
+                    }
+                    break;
+                case TargetRange.kCirclefield:
+                    {
+                        List<UnitBase> set = new List<UnitBase>();
+                        switch (filter)
+                        {
+                            case TargetFilter.kNearestEnemy:
+                            case TargetFilter.kLowestHPEnemy:
+                                BattleInterface.Instance.world.SelectCircle(mSkill.Owner.position.x, mSkill.Owner.position.y, radius, set, (obj) => obj.CampID != mSkill.Owner.CampID);
+                                break;
+                            case TargetFilter.kLowestHPAlly:
+                            case TargetFilter.kNearestAlly:
+                                BattleInterface.Instance.world.SelectCircle(mSkill.Owner.position.x, mSkill.Owner.position.y, radius, set, (obj) => obj.CampID == mSkill.Owner.CampID);
+                                break;
+                        }
+                        UnitBase unit = null;
+                        switch (filter)
+                        {
+                            case TargetFilter.kNearestAlly:
+                            case TargetFilter.kNearestEnemy:
+                                float sqr_dis = 0;
+                                for (int i = 0; i < set.Count; ++i)
+                                {
+
+                                    float dx = set[i].position.x - mSkill.Owner.position.x;
+                                    float dy = set[i].position.y - mSkill.Owner.position.y;
+                                    var _sqr_dis = dx * dx + dy * dy;
+                                    if (unit == null || _sqr_dis < sqr_dis)
+                                    {
+                                        unit = set[i];
+                                        sqr_dis = _sqr_dis;
+                                    }
+                                }
+                                break;
+                            case TargetFilter.kLowestHPAlly:
+                            case TargetFilter.kLowestHPEnemy:
+                                for (int i = 0; i < set.Count; ++i)
+                                {
+                                    if (unit == null || unit.HP > set[i].HP)
+                                    {
+                                        unit = set[i];
+                                    }
+                                }
+                                break;
+                        }
+                        mSkill.target = unit;
+
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            SelectTargetAction action = new SelectTargetAction();
+            action.filter = this.filter;
+            action.radius = this.radius;
+            action.range = this.range;
+            action.mSkill = skill;
+            return action;
+        }
+    }
+   
+    /// <summary>
+    /// 为单位加buff
+    /// </summary>
+    public class AddBuffAction : SkillAction
+    {
+        int templateID;
+        public AddBuffAction(int id)
+        {
+            templateID = id;
+        }
+        public override bool Execute(float dt)
+        {
+            mSkill.target.AddBuff(templateID, mSkill.Owner);
+            return true;
+        }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            AddBuffAction act = new AddBuffAction(templateID);
+            act.mSkill = skill;
+            return act;
+        }
+    }
+
+    /// <summary>
+    /// 释放AOE场
+    /// </summary>
+    public class AoeFieldAction : SkillAction
+    {
+
+        public bool userInput;
+        public float duration;
+        public float interval;
+        public RegionType type;
+        public float radius;
+        public float width;
+        public float height;
+        public float theta;
+
+        public List<BuffEmitter> emitters;
+
+        public override bool Execute(float dt)
+        {
+
+            float x, y;
+            if (userInput)
+            {
+                if (mSkill.inputX > 0 || mSkill.inputY > 0)
+                {
+                    x = mSkill.inputX;
+                    y = mSkill.inputY;
+                }
+                else
+                {
+                    x = mSkill.target.position.x;
+                    y = mSkill.target.position.y;
+                }
+            }
+            else
+            {
+                x = mSkill.target.position.x;
+                y = mSkill.target.position.y;
+            }
+            AoeRegion region = null;
+            switch (type)
+            {
+                case RegionType.kCircle:
+                    {
+                        region = new CircleRegion(BattleInterface.Instance.world, x, y, radius);
+                    }
+                    break;
+                case RegionType.kRect:
+                    {
+                        var dx = x - mSkill.Owner.position.x;
+                        var dy = y - mSkill.Owner.position.y;
+                        region = new RectRegion(BattleInterface.Instance.world, mSkill.Owner.position.x, mSkill.Owner.position.y, dx, dy, width, height);
+                    }
+                    break;
+                case RegionType.kSector:
+                    {
+                        var dx = x - mSkill.Owner.position.x;
+                        var dy = y - mSkill.Owner.position.y;
+                        region = new SectorRegion(BattleInterface.Instance.world, mSkill.Owner.position.x, mSkill.Owner.position.y, dx, dy, radius, theta);
+                    }
+                    break;
+            }
+            AoeField aoe = new AoeField(mSkill.Owner, region, duration, interval, emitters);
+            BattleInterface.Instance.AddAoeField(aoe);
+            return true;
+        }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            AoeFieldAction act = new AoeFieldAction();
+            act.userInput = userInput;
+            act.duration = duration;
+            act.interval = interval;
+            act.type = type;
+            act.radius = radius;
+            act.width = width;
+            act.height = height;
+            act.theta = theta;
+            act.mSkill =skill;
+            return act;
+        }
+    }
+
+    /// <summary>
+    /// 播放角色动画
+    /// </summary>
+    public class PlayAnimationAction : SkillAction
+    {
+        private string name;
+        private float mElapseTime = 0;
+        private float mDuration;
+
+        private bool mExecuted = false;
+        public PlayAnimationAction(string name, float duration)
+        {
+            this.name = name;
+            mDuration = duration;
+            mElapseTime = 0;
+        }
+        public override bool Execute(float dt)
+        {
+            if(!mExecuted)
+            {
+                mExecuted = true;
+                //播放动画
+            }
+            mElapseTime += dt;
+            return mElapseTime >= mDuration;
+        }
+        public override void Reset()
+        {
+            mExecuted = false;
+            mElapseTime = 0;
+        }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            PlayAnimationAction act = new PlayAnimationAction(this.name, this.mDuration);
+            act.mSkill = skill;
+            return act;
+        }
+    }
+
+    /// <summary>
+    /// 播放特效
+    /// </summary>
+    public class PlayEffectAction :SkillAction
+    {
+
+        private string name;
+        public PlayEffectAction (string name )
+        {
+            this.name = name;
+        }
+        public override bool Execute(float dt)
+        {
+            //播放特效
+            return true;
+        }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            PlayEffectAction act = new PlayEffectAction(name);
+            act.mSkill = skill;
+            return act;
+        }
+    }
+    
+    /// <summary>
+    /// 播放音效
+    /// </summary>
+    public class PlaySoundAction :SkillAction
+    {
+
+        private string name;
+        public PlaySoundAction(string name)
+        {
+            this.name = name;
+        }
+        public override bool Execute(float dt)
+        {
+            //播放音效
+            return true;
+        }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            PlaySoundAction act = new PlaySoundAction(name);
+            act.mSkill = skill;
+            return act;
+        }
+    }
+
+    
 }

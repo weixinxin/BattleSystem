@@ -1,4 +1,5 @@
 ﻿
+using BattleSystem.ObjectModule;
 using System.Collections.Generic;
 namespace BattleSystem.SkillModule
 {
@@ -10,6 +11,11 @@ namespace BattleSystem.SkillModule
     }
     public class Skill
     {
+
+        /// <summary>
+        /// 技能持有者
+        /// </summary>
+        public UnitBase Owner { get; private set; }
 
         /// <summary>
         /// 唯一标识符
@@ -75,13 +81,14 @@ namespace BattleSystem.SkillModule
         /// <param name="templateID">技能模板ID</param>
         /// <param name="id">技能ID</param>
         /// <param name="level">技能等级</param>
-        public Skill(int templateID,int id,int level = 1)
+        public Skill(UnitBase owner,int templateID,int id,int level = 1)
         {
+            this.Owner = owner;
             TemplateID = templateID;
             ID = id;
             Level = level;
             //通过模板ID获取配置数据
-            mAction = SkillManager.LoadSkillAction(templateID);
+            mAction = SkillManager.LoadSkillAction(templateID,this);
 
             var cdScale = 0;
             //初始CD
@@ -92,16 +99,16 @@ namespace BattleSystem.SkillModule
         /// <summary>
         /// 输入的技能目标参数
         /// </summary>
-        private int mInputID = -1;
+        internal UnitBase target;
 
         /// <summary>
         /// 输入的技能坐标参数X
         /// </summary>
-        private float mInputX = 0;
+        internal float inputX = 0;
         /// <summary>
         /// 输入的技能坐标参数Y
         /// </summary>
-        private float mInputY = 0;
+        internal float inputY = 0;
 
 
         
@@ -127,10 +134,10 @@ namespace BattleSystem.SkillModule
         /// <summary>
         /// 对单位释放技能
         /// </summary>
-        /// <param name="targetID"></param>
-        public void Cast(int targetID)
+        /// <param name="target">目标单位</param>
+        public void Cast(UnitBase target)
         {
-            mInputID = targetID;
+            this.target = target;
             Cast();
         }
         /// <summary>
@@ -140,8 +147,8 @@ namespace BattleSystem.SkillModule
         /// <param name="y"></param>
         public void Cast(float x,float y)
         {
-            mInputX = x;
-            mInputY = y;
+            this.inputX = x;
+            this.inputY = y;
             Cast();
         }
 

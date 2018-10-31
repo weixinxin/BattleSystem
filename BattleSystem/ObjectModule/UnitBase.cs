@@ -1,21 +1,38 @@
 ﻿using BattleSystem.SkillModule;
+using BattleSystem.SpaceModule;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 namespace BattleSystem.ObjectModule
 {
     public delegate void FloatDelegate(float f);
-    public class UnitBase :BaseObject
+    public class UnitBase 
     {
+
+        public Vector3 position;
+
+        private WorldSpace mWorldSpace = null;
+
+        internal GridNode mGridNode = null;
         /// <summary>
         /// 唯一标识符
         /// </summary>
         public int ID { get; set; }
 
         /// <summary>
+        /// 护盾
+        /// </summary>
+        public Shield Shield = new Shield();
+
+        /// <summary>
         /// 血量
         /// </summary>
         public int HP { get; private set; }
+
+        /// <summary>
+        /// 等级
+        /// </summary>
+        public int Level { get; private set; }
 
         /// <summary>
         /// 最大血量
@@ -26,6 +43,8 @@ namespace BattleSystem.ObjectModule
         /// 是否死亡
         /// </summary>
         public bool IsDead { get; private set; }
+
+        private float mDestroyCountdown = 5.0f;
 
         /// <summary>
         /// 攻击力
@@ -57,6 +76,7 @@ namespace BattleSystem.ObjectModule
         /// </summary>
         public int CampID { get; set; }
 
+        
 
         private int mAttackMissCount = 0;
         private int mMagicDamageImmunityCount = 0;
@@ -118,14 +138,39 @@ namespace BattleSystem.ObjectModule
 
         internal List<Buff> Buffs = new List<Buff>();
 
+        /// <summary>
+        /// 尝试往单位身上加buff
+        /// </summary>
+        /// <param name="templateID">模板id</param>
+        /// <param name="caster">施法者</param>
+        /// <returns>是否成功</returns>
+   
+        internal bool AddBuff(int templateID,UnitBase caster)
+        {
+            if (IsDead) return false;
+            int Groups = 1;//读取配置获取所属组
+            for(int i = Buffs.Count - 1; i >=0;--i)
+            {
+                if (Buffs[i].MutexCheck(Groups))
+                    return false;
+            }
+            for (int i = Buffs.Count - 1; i >= 0; --i)
+            {
+                if (Buffs[i].OverlayCheck(templateID))
+                    return Buffs[i].OverlayTactics == OverlayTactics.kAddTime;
+            }
+            var buff = new Buff(templateID, this, caster);
+            Buffs.Add(buff);
+            return true;
+        }
 
         /// <summary>
         /// 加状态
         /// </summary>
-        /// <param name="state"></param>
-        /// <returns></returns>
+        /// <param name="state">状态</param>
         internal void AddState(BuffEffectType state)
         {
+            if (IsDead) return;
             switch (state)
             {
                 case BuffEffectType.kAttackMiss:
@@ -161,10 +206,10 @@ namespace BattleSystem.ObjectModule
         /// <summary>
         /// 移除状态
         /// </summary>
-        /// <param name="state"></param>
-        /// <returns></returns>
+        /// <param name="state">状态</param>
         internal void RemoveState(BuffEffectType state)
         {
+            if (IsDead) return;
             switch (state)
             {
                 case BuffEffectType.kAttackMiss:
@@ -206,12 +251,22 @@ namespace BattleSystem.ObjectModule
             }
         }
         public UnitBase(){}
-        public UnitBase(int id, int templateID, int campID)
+
+        private static int s_id = 1;
+        private static int id
+        {
+            get
+            {
+                return s_id++;
+            }
+        }
+        public UnitBase(WorldSpace ws,int templateID, int campID, int level)
         {
             ID = id;
             CampID = campID;
             HP = 100;
-            MaxHP = 100;
+            MaxHP = 100; 
+            mWorldSpace = ws; 
             IsDead = false;
             ATK = new Attribute(100, null);
             MoveSpeed = new Attribute(100, null);
@@ -220,44 +275,105 @@ namespace BattleSystem.ObjectModule
             VisualRange = new Attribute(100, null);
 
         }
-        public void AddHP(int hp,float curPercent,float maxPercent,float lostPercent)
+        /// <summary>
+        /// 单位受到治疗
+        /// </summary>
+        /// <param name="delta">治疗量</param>
+        /// <param name="healer">治疗者</param>
+        public void AddHP(int delta,UnitBase healer)
         {
-            Trace.Assert(hp >= 0 && curPercent >= 0 &&maxPercent >= 0 &&lostPercent >= 0);
-            float delta = hp + HP * curPercent + MaxHP * maxPercent + (MaxHP - HP) * lostPercent;
-
-            HP = HP + (int)delta;
-            if (HP > MaxHP) HP = MaxHP;
-        }
-
-        public void LostHP(int hp, float curPercent, float maxPercent, float lostPercent)
-        {
-            Trace.Assert(hp >= 0 && curPercent >= 0 && maxPercent >= 0 && lostPercent >= 0);
-            float delta = hp + HP * curPercent + MaxHP * maxPercent + (MaxHP - HP) * lostPercent;
-
-            HP = HP - (int)delta;
-            if (HP < 0)
+            if (IsDead) return;
+            var offset = BuffManager.OnUnitWillHeal(this, healer, delta);
+            delta += offset;
+            if(delta > 0)
             {
-                if(isDeathless)
+                var origin = HP;
+                HP = HP + delta;
+                if (HP > MaxHP) HP = MaxHP;
+                BuffManager.OnUnitBeHealed(this, healer, HP - origin);
+            }
+        }
+        /// <summary>
+        /// 单位受到伤害
+        /// </summary>
+        /// <param name="delta">伤血值</param>
+        /// <param name="assailant">攻击者</param>
+        /// <param name="dt">伤害类型</param>
+        /// <param name="isAttack">是否普攻</param>
+        public void LostHP(int delta, UnitBase assailant, DamageType dt,bool isAttack)
+        {
+            if (IsDead) return;
+            var offset = BuffManager.OnUnitWillHurt(this, assailant, delta, dt, isAttack);
+            delta += offset;
+            if (delta > 0)
+            {
+                var _delta = Shield.Consume(delta);
+                HP -= _delta;
+                BuffManager.OnUnitBeHurted(this, assailant, delta, dt, isAttack);
+                if (HP < 0)
                 {
-                    HP = 1;
-                }
-                else
-                {
-                    HP = 0;
-
+                    if (isDeathless)
+                    {
+                        HP = 1;
+                    }
+                    else if (BuffManager.OnUnitWillDie(this, assailant))
+                    {
+                        HP = 0;
+                        OnDead();
+                        BuffManager.OnUnitBeSlayed(this, assailant);
+                    }
+                    else
+                    {
+                        if (HP <= 0) HP = 1;
+                    }
                 }
             }
         }
-        public virtual void Update(float dt)
+
+        public virtual void OnDead()
         {
-            //更新并移除已经结束的buff
-            for(int i = Buffs.Count - 1;i >= 0; --i)
+            IsDead = true;
+            mDestroyCountdown = 5.0f;
+        }
+
+        /// <summary>
+        /// 更新单位逻辑
+        /// </summary>
+        /// <param name="dt">时间</param>
+        /// <returns>是否可以销毁单位</returns>
+        public virtual bool Update(float dt)
+        {
+            if(IsDead)
             {
-                if(Buffs[i].Update(dt))
+                mDestroyCountdown -= dt;
+            }
+            else
+            {
+                //更新并移除已经结束的buff
+                for (int i = Buffs.Count - 1; i >= 0; --i)
                 {
-                    Buffs.RemoveAt(i);
+                    if (Buffs[i].Update(dt))
+                    {
+                        Buffs[i].Destroy();
+                        Buffs.RemoveAt(i);
+                    }
                 }
             }
+            return mDestroyCountdown <= 0;
+        }
+
+
+        public void UpdatePosition(float x, float y, float z)
+        {
+            if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z) || float.IsInfinity(x) || float.IsInfinity(y) || float.IsInfinity(z))
+            {
+                Debug.LogErrorFormat("error: {0},{1},{2}", x, y, z);
+                return;
+            }
+            position.x = x;
+            position.y = y;
+            position.z = z;
+            mWorldSpace.UpdateNode(this);
         }
     }
 }

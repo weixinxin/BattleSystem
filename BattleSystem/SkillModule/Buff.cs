@@ -1,19 +1,54 @@
 ﻿
 using BattleSystem.ObjectModule;
 using System.Collections.Generic;
+using LuaEngine;
+using System;
 namespace BattleSystem.SkillModule
 {
+    /// <summary>
+    /// 相同buff的叠加策略
+    /// </summary>
+    public enum OverlayTactics
+    {
+        kCoexist,//多个共存
+        kSingleton,//不允许叠加
+        kReplace,//以新代旧
+        kAddTime,//增加持续时间
+    }
+
     /// <summary>
     /// 附加状态
     /// </summary>
     public class Buff
     {
-
+        private static int s_id = 0;
+        private static int id
+        {
+            get
+            {
+                return s_id++;
+            }
+        }
         /// <summary>
         /// 唯一标识符
         /// </summary>
         public int ID { get;private set; }
+        private int mTemplateID;
+        /// <summary>
+        /// 所属类别组
+        /// </summary>
+        public int Groups { get; private set; }
 
+        /// <summary>
+        /// 排斥的组
+        /// </summary>
+        private int mRejectionGroups = 0;
+
+
+        /// <summary>
+        /// 叠加策略
+        /// </summary>
+        public OverlayTactics OverlayTactics { get; private set; }
         /// <summary>
         /// 描述
         /// </summary>
@@ -34,6 +69,7 @@ namespace BattleSystem.SkillModule
         /// 间隔
         /// </summary>
         public float Duration { get; private set; }
+        private float mCfgDuration;
         private float mElapseTime = 0;
 
         /// <summary>
@@ -60,32 +96,225 @@ namespace BattleSystem.SkillModule
         /// buff施法者
         /// </summary>
         public UnitBase Caster { get; private set; }
+        private LuaTable mLuaBuff = null;
+        private LuaFunction mOnUnitWillDieHandle = null;
+        private LuaFunction mOnUnitBeSlayedHandle = null;
+        private LuaFunction mOnUnitBeSummonedHandle = null;
+        private LuaFunction mOnUnitWillHurtHandle = null;
+        private LuaFunction mOnUnitBeHurtedHandle = null;
+        private LuaFunction mOnUnitWillHealHandle = null;
+        private LuaFunction mOnUnitBeHealedHandle = null;
+        private LuaFunction mOnUnitCastSpellHandle = null;
+        private LuaFunction mOnSpellHitHandle = null;
 
 
-        private List<BuffEffect> mEffects;
+        protected List<BuffEffect> mEffects;
 
-        private List<BuffEffect> mRunningEffects = new List<BuffEffect>();
-        private int mPauseCount = 0;
-        public Buff(int id,int templateID,UnitBase Owner,UnitBase caster)
+        protected List<BuffEffect> mRunningEffects = new List<BuffEffect>();
+        protected List<BuffEffect> mRunningScriptEffects = new List<BuffEffect>(); 
+        protected int mPauseCount = 0;
+        public Buff(int templateID,UnitBase owner,UnitBase caster)
         {
-            this.Owner = Owner;
+            this.mTemplateID = templateID;
+            this.Owner = owner;
             this.Caster = caster;
             this.ID = id;
             mPauseCount = 0;
+
+            bool isScriptBuff = false; //是否有脚本
+            if (isScriptBuff)
+            {
+                var lua = LuaInterface.Singleton.GetLuaState();
+                LuaTable buff = lua.Require<LuaTable>(string.Format("buff/buff{0}", templateID));
+                if (buff == null)
+                {
+                    Debug.LogErrorFormat("load buff/buff{0}.lua failed!", templateID);
+                }
+                else
+                {
+
+                    LuaFunction newFunc = buff["new"] as LuaFunction;
+                    newFunc.BeginPCall();
+                    newFunc.PCall();
+                    mLuaBuff = (LuaTable)newFunc.CheckLuaTable();
+                    newFunc.EndPCall();
+
+                    LuaFunction init = mLuaBuff["init"] as LuaFunction;
+                    if (init != null)
+                    {
+                        init.BeginPCall();
+                        init.Push(mLuaBuff);
+                        init.Push(id);
+                        init.Push(templateID);
+                        init.Push(owner);
+                        init.Push(caster);
+                        init.PCall();
+                        init.EndPCall();
+                    }
+                    else
+                    {
+                        Debug.LogErrorFormat("buff/buff{0}.lua dont find init function !",templateID);
+                    }
+                    mOnUnitWillDieHandle = mLuaBuff["OnUnitWillDie"] as LuaFunction;
+                    if (mOnUnitWillDieHandle != null)
+                        BuffManager.RegisterUnitWillDie(this);
+                    mOnUnitBeSlayedHandle = mLuaBuff["OnUnitBeSlayed"] as LuaFunction;
+                    if (mOnUnitBeSlayedHandle != null)
+                        BuffManager.RegisterUnitBeSlayed(this);
+                    mOnUnitBeSummonedHandle = mLuaBuff["OnUnitBeSummoned"] as LuaFunction;
+                    if (mOnUnitBeSummonedHandle != null)
+                        BuffManager.RegisterUnitBeSummoned(this);
+                    mOnUnitWillHurtHandle = mLuaBuff["OnUnitWillHurt"] as LuaFunction;
+                    if (mOnUnitWillHurtHandle != null)
+                        BuffManager.RegisterUnitWillHurt(this);
+                    mOnUnitBeHurtedHandle = mLuaBuff["OnUnitBeHurted"] as LuaFunction;
+                    if (mOnUnitBeHurtedHandle != null)
+                        BuffManager.RegisterUnitBeHurted(this);
+                    mOnUnitWillHealHandle = mLuaBuff["OnUnitWillHeal"] as LuaFunction;
+                    if (mOnUnitWillHealHandle != null)
+                        BuffManager.RegisterUnitWillHeal(this);
+                    mOnUnitBeHealedHandle = mLuaBuff["OnUnitBeHealed"] as LuaFunction;
+                    if (mOnUnitBeHealedHandle != null)
+                        BuffManager.RegisterUnitBeHealed(this);
+                    mOnUnitCastSpellHandle = mLuaBuff["OnUnitCastSpell"] as LuaFunction;
+                    if (mOnUnitCastSpellHandle != null)
+                        BuffManager.RegisterUnitCastSpell(this);
+                    mOnSpellHitHandle = mLuaBuff["OnSpellHit"] as LuaFunction;
+                    if (mOnSpellHitHandle != null)
+                        BuffManager.RegisterSpellHit(this);
+                }
+            }
+
+
             //根据templateID 读取配置
             mEffects = SkillManager.LoadBuffEffect(templateID);
             this.Delay = 0;
-
+            mCfgDuration = 10;
+            Duration = mCfgDuration;
             mDelay = Delay;
             if (mDelay == 0)
                 Apply();
             mElapseTime = 0;
         }
-        protected void Apply()
+
+        /// <summary>
+        /// buff互斥检查
+        /// </summary>
+        /// <param name="templateID"></param>
+        /// <param name="Groups"></param>
+        /// <returns></returns>
+        public bool MutexCheck(int Groups)
         {
+            //优先检查排斥组
+            return (mRejectionGroups & Groups) > 0;
+        }
+
+        private bool mRecycle = false;
+        /// <summary>
+        /// 叠加
+        /// </summary>
+        /// <param name="templateID"></param>
+        /// <returns></returns>
+        public bool OverlayCheck(int templateID)
+        {
+
+            if (templateID == mTemplateID)
+            {
+                switch (OverlayTactics)
+                {
+                    case SkillModule.OverlayTactics.kAddTime:
+                        if (!isLoop)
+                        {
+                            Duration += mCfgDuration;
+                        }
+                        return true;
+                    case SkillModule.OverlayTactics.kSingleton:
+                        return true;
+                    case SkillModule.OverlayTactics.kCoexist:
+                        return false;
+                    case SkillModule.OverlayTactics.kReplace:
+                        mRecycle = true;
+                        return false;
+
+                }
+            }
+            return false;
+        }
+
+
+        public virtual void Destroy()
+        {
+            Clear();
+            for (int i = 0; i < mRunningScriptEffects.Count; ++i)
+            {
+                mRunningScriptEffects[i].Clear(Owner);
+            }
+            mRunningScriptEffects.Clear();
+
+            if (mOnUnitWillDieHandle != null)
+            {
+                mOnUnitWillDieHandle.Dispose();
+                mOnUnitWillDieHandle = null;
+                BuffManager.UnregisterUnitWillDie(this);
+            }
+            if (mOnUnitBeSlayedHandle != null)
+            {
+                mOnUnitBeSlayedHandle.Dispose();
+                mOnUnitBeSlayedHandle = null;
+                BuffManager.UnregisterUnitBeSlayed(this);
+            }
+            if (mOnUnitBeSummonedHandle != null)
+            {
+                mOnUnitBeSummonedHandle.Dispose();
+                mOnUnitBeSummonedHandle = null;
+                BuffManager.UnregisterUnitBeSummoned(this);
+            }
+            if (mOnUnitWillHurtHandle != null)
+            {
+                mOnUnitWillHurtHandle.Dispose();
+                mOnUnitWillHurtHandle = null;
+                BuffManager.UnregisterUnitWillHurt(this);
+            }
+            if (mOnUnitBeHurtedHandle != null)
+            {
+                mOnUnitBeHurtedHandle.Dispose();
+                mOnUnitBeHurtedHandle = null;
+                BuffManager.UnregisterUnitBeHurted(this);
+            }
+            if (mOnUnitWillHealHandle != null)
+            {
+                mOnUnitWillHealHandle.Dispose();
+                mOnUnitWillHealHandle = null;
+                BuffManager.UnregisterUnitWillHeal(this);
+            }
+            if (mOnUnitBeHealedHandle != null)
+            {
+                mOnUnitBeHealedHandle.Dispose();
+                mOnUnitBeHealedHandle = null;
+                BuffManager.UnregisterUnitBeHealed(this);
+            }
+            if (mOnUnitCastSpellHandle != null)
+            {
+                mOnUnitCastSpellHandle.Dispose();
+                mOnUnitCastSpellHandle = null;
+                BuffManager.UnregisterUnitCastSpell(this);
+            }
+            if (mOnSpellHitHandle != null)
+            {
+                mOnSpellHitHandle.Dispose();
+                mOnSpellHitHandle = null;
+                BuffManager.UnregisterSpellHit(this);
+            }
+        }  
+        /// <summary>
+        /// buf默认给宿主施加
+        /// </summary>
+        protected virtual void Apply()
+        {
+            if (Owner.IsDead) return;
             for (int i = 0; i < mEffects.Count; ++i)
             {
-                if(mEffects[i].Apply(Owner))
+                if(mEffects[i].Apply(Owner,Caster))
                 {
                     //需要结束后移除的效果才添加进队列 
                     mRunningEffects.Add(mEffects[i]);
@@ -98,8 +327,9 @@ namespace BattleSystem.SkillModule
         /// </summary>
         /// <param name="dt"></param>
         /// <returns>是否结束</returns>
-        public bool Update(float dt)
+        public virtual bool Update(float dt)
         {
+            if (mRecycle) return true;
             //检查buff效果是否结束
             if(mDelay > 0)
             {
@@ -135,7 +365,7 @@ namespace BattleSystem.SkillModule
         /// <summary>
         /// 清除buff
         /// </summary>
-        public void Clear()
+        public virtual void Clear()
         {
             for (int i = 0; i < mRunningEffects.Count; ++i)
             {
@@ -148,7 +378,7 @@ namespace BattleSystem.SkillModule
         /// <summary>
         /// 暂停buff效果(例如沉默，计数器是针对多个沉默先后施加的情况)
         /// </summary>
-        public void Pause()
+        public virtual void Pause()
         {
             if (mPauseCount == 0)
             {
@@ -160,7 +390,7 @@ namespace BattleSystem.SkillModule
         /// <summary>
         /// 恢复buff效果(例如沉默效果结束)
         /// </summary>
-        public void Resume()
+        public virtual void Resume()
         {
             if (mPauseCount > 0)
             {
@@ -175,5 +405,221 @@ namespace BattleSystem.SkillModule
                 Debug.LogError("buff is not paused!");
             }
         }
+        #region 消息响应
+
+        /// <summary>
+        /// 单位即将受到伤害
+        /// </summary>
+        /// <param name="injured">受伤者</param>
+        /// <param name="assailant">攻击者</param>
+        /// <param name="value">伤害值</param>
+        /// <param name="dt">伤害类型</param>
+        /// <param name="isAttack">是否来自普通攻击</param>
+        /// <returns>修正值</returns>
+        public virtual int OnUnitWillHurt(UnitBase injured, UnitBase assailant, int value, DamageType dt, bool isAttack)
+        {
+            int offset = 0;
+            if (mOnUnitWillDieHandle != null)
+            {
+                mOnUnitWillDieHandle.BeginPCall();
+                mOnUnitWillDieHandle.Push(mLuaBuff);
+                mOnUnitWillDieHandle.Push(injured);
+                mOnUnitWillDieHandle.Push(assailant);
+                mOnUnitWillDieHandle.Push(value);
+                mOnUnitWillDieHandle.Push(dt);
+                mOnUnitWillDieHandle.Push(isAttack);
+                mOnUnitWillDieHandle.PCall();
+                offset = (int)mOnUnitWillDieHandle.CheckNumber();
+                mOnUnitWillDieHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitWillDieHandle");
+            return offset;
+        }
+
+        /// <summary>
+        /// 单位受到伤害
+        /// </summary>
+        /// <param name="injured">受伤者</param>
+        /// <param name="assailant">攻击者</param>
+        /// <param name="value">伤害值</param>
+        /// <param name="dt">伤害类型</param>
+        /// <param name="isAttack">是否来自普通攻击</param>
+        public virtual void OnUnitBeHurted(UnitBase injured, UnitBase assailant, int value, DamageType dt, bool isAttack)
+        {
+            if (mOnUnitBeHurtedHandle != null)
+            {
+                mOnUnitBeHurtedHandle.BeginPCall();
+                mOnUnitBeHurtedHandle.Push(mLuaBuff);
+                mOnUnitBeHurtedHandle.Push(injured);
+                mOnUnitBeHurtedHandle.Push(assailant);
+                mOnUnitBeHurtedHandle.Push(value);
+                mOnUnitBeHurtedHandle.Push(dt);
+                mOnUnitBeHurtedHandle.Push(isAttack);
+                mOnUnitBeHurtedHandle.PCall();
+                mOnUnitBeHurtedHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitBeHurtedHandle");
+        }
+        
+        /// <summary>
+        /// 单位即将受到治疗
+        /// </summary>
+        /// <param name="injured">受伤者</param>
+        /// <param name="healer">治疗者</param>
+        /// <param name="value">治疗值</param>
+        /// <returns>修正值</returns>
+        public virtual int OnUnitWillHeal(UnitBase injured, UnitBase healer, int value)
+        {
+            if (mOnUnitWillHealHandle != null)
+            {
+                mOnUnitWillHealHandle.BeginPCall();
+                mOnUnitWillHealHandle.Push(mLuaBuff);
+                mOnUnitWillHealHandle.Push(injured);
+                mOnUnitWillHealHandle.Push(healer);
+                mOnUnitWillHealHandle.Push(value);
+                mOnUnitWillHealHandle.PCall();
+                mOnUnitWillHealHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitWillHeal");
+            return 0;
+        }
+        /// <summary>
+        /// 单位受到治疗
+        /// </summary>
+        /// <param name="injured">受伤者</param>
+        /// <param name="healer">治疗者</param>
+        /// <param name="value">治疗值</param>
+        public virtual void OnUnitBeHealed(UnitBase injured, UnitBase healer, int value)
+        {
+
+            if (mOnUnitBeHealedHandle != null)
+            {
+                mOnUnitBeHealedHandle.BeginPCall();
+                mOnUnitBeHealedHandle.Push(mLuaBuff);
+                mOnUnitBeHealedHandle.Push(injured);
+                mOnUnitBeHealedHandle.Push(healer);
+                mOnUnitBeHealedHandle.Push(value);
+                mOnUnitBeHealedHandle.PCall();
+                mOnUnitBeHealedHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitBeHealed");
+        }
+
+        /// <summary>
+        /// 单位被召唤
+        /// </summary>
+        /// <param name="unit">召唤物</param>
+        /// <param name="summoner">召唤者</param>
+        public virtual void OnUnitBeSummoned(UnitBase unit, UnitBase summoner)
+        {
+
+            if (mOnUnitBeSummonedHandle != null)
+            {
+                mOnUnitBeSummonedHandle.BeginPCall();
+                mOnUnitBeSummonedHandle.Push(mLuaBuff);
+                mOnUnitBeSummonedHandle.Push(unit);
+                mOnUnitBeSummonedHandle.Push(summoner);
+                mOnUnitBeSummonedHandle.PCall();
+                mOnUnitBeSummonedHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitBeSummoned");
+        }
+
+        /// <summary>
+        /// 单位被击杀
+        /// </summary>
+        /// <param name="unit">死亡单位</param>
+        /// <param name="slayer">攻击者</param>
+        public virtual void OnUnitBeSlayed(UnitBase unit, UnitBase slayer)
+        {
+
+            if (mOnUnitBeSlayedHandle != null)
+            {
+                mOnUnitBeSlayedHandle.BeginPCall();
+                mOnUnitBeSlayedHandle.Push(mLuaBuff);
+                mOnUnitBeSlayedHandle.Push(unit);
+                mOnUnitBeSlayedHandle.Push(slayer);
+                mOnUnitBeSlayedHandle.PCall();
+                mOnUnitBeSlayedHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitBeSlayed");
+        }
+
+        /// <summary>
+        /// 单位濒临死亡
+        /// </summary>
+        /// <param name="unit">死亡单位</param>
+        /// <param name="slayer">攻击者</param>
+        /// <returns>是否进入死亡</returns>
+        public virtual bool OnUnitWillDie(UnitBase unit, UnitBase slayer)
+        {
+            bool shouldDie = true;
+            if (mOnUnitWillDieHandle != null)
+            {
+                mOnUnitWillDieHandle.BeginPCall();
+                mOnUnitWillDieHandle.Push(mLuaBuff);
+                mOnUnitWillDieHandle.Push(unit);
+                mOnUnitWillDieHandle.Push(slayer);
+                mOnUnitWillDieHandle.PCall();
+                shouldDie = mOnUnitWillDieHandle.CheckBoolean();
+                mOnUnitWillDieHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitWillDie");
+            return shouldDie;
+        }
+
+        /// <summary>
+        /// 单位释放法术
+        /// </summary>
+        /// <param name="unit">施法单位</param>
+        /// <param name="skill">技能</param>
+        public virtual void OnUnitCastSpell(UnitBase unit, Skill skill)
+        {
+
+            if (mOnUnitCastSpellHandle != null)
+            {
+                mOnUnitCastSpellHandle.BeginPCall();
+                mOnUnitCastSpellHandle.Push(mLuaBuff);
+                mOnUnitCastSpellHandle.Push(unit);
+                mOnUnitCastSpellHandle.Push(skill);
+                mOnUnitCastSpellHandle.PCall();
+                mOnUnitCastSpellHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnUnitCastSpell");
+        }
+
+        /// <summary>
+        /// 法术命中目标
+        /// </summary>
+        /// <param name="unit">目标</param>
+        /// <param name="caster">施法者</param>
+        /// <param name="skill">技能</param>
+        /// <param name="killed">是否击杀</param>
+        public virtual void OnSpellHit(UnitBase unit, UnitBase caster, Skill skill, bool killed)
+        {
+
+            if (mOnSpellHitHandle != null)
+            {
+                mOnSpellHitHandle.BeginPCall();
+                mOnSpellHitHandle.Push(mLuaBuff);
+                mOnSpellHitHandle.Push(unit);
+                mOnSpellHitHandle.Push(caster);
+                mOnSpellHitHandle.Push(skill);
+                mOnSpellHitHandle.Push(killed);
+                mOnSpellHitHandle.PCall();
+                mOnSpellHitHandle.EndPCall();
+            }
+            else
+                throw new Exception("undefined OnSpellHit");
+        }
+        #endregion
     }
 }

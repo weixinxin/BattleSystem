@@ -3,22 +3,21 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace BattleSystem.SpaceModule
 {
     internal class GridNode
     {
-        private List<BaseObject> mList;
+        internal List<UnitBase> mList;
 
         public bool isEmpty { get; private set; }
 
         public GridNode()
         {
-            mList = new List<BaseObject>(4);
+            mList = new List<UnitBase>(4);
             isEmpty = true;
         }
-        public void Remove(BaseObject obj)
+        public void Remove(UnitBase obj)
         {
             if (mList.Contains(obj))
             {
@@ -26,7 +25,7 @@ namespace BattleSystem.SpaceModule
             }
             isEmpty = mList.Count == 0;
         }
-        public void Add(BaseObject obj)
+        public void Add(UnitBase obj)
         {
             if (!mList.Contains(obj))
             {
@@ -35,7 +34,7 @@ namespace BattleSystem.SpaceModule
             isEmpty = mList.Count == 0;
         }
 
-        public void Select(List<BaseObject> resultNodes, Predicate<BaseObject> match)
+        public void Select(List<UnitBase> resultNodes, Predicate<UnitBase> match)
         {
             for (int i = 0; i < mList.Count; ++i)
             {
@@ -46,7 +45,7 @@ namespace BattleSystem.SpaceModule
             }
         }
 
-        public void SelectRect(float left, float bottom, float right, float top, List<BaseObject> resultNodes, Predicate<BaseObject> match)
+        public void SelectRect(float left, float bottom, float right, float top, List<UnitBase> resultNodes, Predicate<UnitBase> match)
         {
             for (int i = 0; i < mList.Count; ++i)
             {
@@ -62,7 +61,7 @@ namespace BattleSystem.SpaceModule
         }
 
 
-        public void SelectCircle(float x, float y, float sqr_raduis, List<BaseObject> resultNodes, Predicate<BaseObject> match)
+        public void SelectCircle(float x, float y, float sqr_raduis, List<UnitBase> resultNodes, Predicate<UnitBase> match)
         {
             for (int i = 0; i < mList.Count; ++i)
             {

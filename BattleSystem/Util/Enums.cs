@@ -19,7 +19,7 @@
         //发射子弹
         kShootBullet,
         //选择目标
-        kSelectTargets,
+        kSelectTarget,
     }
 
     public enum BuffEffectType
@@ -79,9 +79,50 @@
     {
 
     }
+
+    public enum DamageType
+    {
+        //物理伤害  
+        kPhysical,
+        //魔法伤害
+        kMagic,
+        //真实伤害
+        kTrue,
+    }
     public enum EventCode
     {
         //单位死亡
         UnitDead,
+        //即将造成伤害
+
+    }
+
+    public enum TargetFilter
+    {
+        kSelf = 0,//自己
+        kNearestEnemy = 1,//最近的敌人
+        kNearestAlly = 2,//最近的盟友
+        kLowestHPEnemy = 3,//血量最低的敌人
+        kLowestHPAlly = 4,//血量最低的盟友
+    }
+
+    public enum TargetRange
+    {
+        kBattlefield = 0,//整个战场
+        kCirclefield = 1,//半径范围内
+    }
+
+    public enum RegionType
+    {
+        kCircle = 0,//圆形区域
+        kRect = 1,//矩形区域
+        kSector = 2,//扇形区域
+    }
+
+    public enum AoeFilter
+    {
+        kAll = 0,
+        kAlly = 1,
+        kEnemy = 2,
     }
 }

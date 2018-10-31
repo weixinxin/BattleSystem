@@ -66,21 +66,24 @@ namespace BattleSystem.SkillModule
             }
         }
 
-        private void DoDamage(UnitBase Owner)
+        private void DoDamage(UnitBase Owner, UnitBase assailant, DamageType dt)
         {
-            Owner.LostHP(CurDelta, CurPercent, BasePercent, BaseDelta * 0.01f);
+            int delta = (int)(CurDelta + Owner.HP * CurPercent + Owner.MaxHP * BasePercent + (Owner.MaxHP - Owner.HP) * BaseDelta * 0.01f);
+            Owner.LostHP(delta, assailant, dt, false);
+            
         }
-        private void DoHeal(UnitBase Owner)
+        private void DoHeal(UnitBase Owner, UnitBase healer)
         {
-            Owner.AddHP(CurDelta, CurPercent, BasePercent, BaseDelta * 0.01f);
+            int delta = (int)(CurDelta + Owner.HP * CurPercent + Owner.MaxHP * BasePercent + (Owner.MaxHP - Owner.HP) * BaseDelta * 0.01f);
+            Owner.AddHP(delta, healer);
         }
         /// <summary>
         /// 应用效果
         /// </summary>
         /// <returns>是否需要移除</returns>
-        public bool Apply(UnitBase Owner)
+        public bool Apply(UnitBase Owner,UnitBase Caster)
         {
-            //永久效果不用移除
+            //永久效果不用移除(伤害治疗都是永久效果)
             bool res = !isPermanent;
             switch(Type)
             {
@@ -98,31 +101,27 @@ namespace BattleSystem.SkillModule
                     if (!Owner.isPhysicalDamageImmunity)
                     {
                         //扣血
-                        DoDamage(Owner);
+                        DoDamage(Owner,Caster, DamageType.kPhysical);
                     }
-                    else
-                    {
-                        res = false;
-                    }
+                    res = false;
                     break;
                 case BuffEffectType.kMagicDamage:
                     if (!Owner.isMagicDamageImmunity)
                     {
                         //扣血
-                        DoDamage(Owner);
+                        DoDamage(Owner, Caster, DamageType.kMagic);
                     }
-                    else
-                    {
                         res = false;
-                    }
                     break;
                 case BuffEffectType.kTrueDamage:
                     //直接扣血
-                    DoDamage(Owner);
+                    DoDamage(Owner,Caster, DamageType.kTrue);
+                    res = false;
                     break;
                 case BuffEffectType.kHeal:
                     //回血
-                    DoHeal(Owner);
+                    DoHeal(Owner, Caster);
+                    res = false;
                     break;
                 case BuffEffectType.kSpeedUp:
                     //移动加速
@@ -236,12 +235,7 @@ namespace BattleSystem.SkillModule
                 case BuffEffectType.kPhysicalDamage:
                 case BuffEffectType.kMagicDamage: 
                 case BuffEffectType.kTrueDamage:
-                    //伤害返还
-                    DoHeal(Owner);
-                    break;
                 case BuffEffectType.kHeal:
-                    //加血返还
-                    DoDamage(Owner);
                     break;
                 case BuffEffectType.kSpeedUp:
                     //移动加速
