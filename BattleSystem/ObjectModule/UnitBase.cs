@@ -6,10 +6,9 @@ using System.Diagnostics;
 namespace BattleSystem.ObjectModule
 {
     public delegate void FloatDelegate(float f);
-    public class UnitBase 
+    public class UnitBase : IMovable
     {
 
-        public Vector3 position;
 
         private WorldSpace mWorldSpace = null;
 
@@ -17,8 +16,12 @@ namespace BattleSystem.ObjectModule
         /// <summary>
         /// 唯一标识符
         /// </summary>
-        public int ID { get; set; }
+        public int ID { get; private set; }
 
+        /// <summary>
+        /// 坐标
+        /// </summary>
+        public Vector3 position { get; protected set; }
         /// <summary>
         /// 护盾
         /// </summary>
@@ -370,10 +373,20 @@ namespace BattleSystem.ObjectModule
                 Debug.LogErrorFormat("error: {0},{1},{2}", x, y, z);
                 return;
             }
-            position.x = x;
-            position.y = y;
-            position.z = z;
+            position = new Vector3(x, y, z);
             mWorldSpace.UpdateNode(this);
+        }
+
+        public float speed
+        {
+            get { return MoveSpeed.value; }
+            set { }
+        }
+
+
+        public float acceleration
+        {
+            get { return 0; }
         }
     }
 }
