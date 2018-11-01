@@ -47,7 +47,15 @@
   <ItemGroup>
     <Compile Include="BattleInterface.cs" />
     <Compile Include="ObjectModule\Attribute.cs" />
+    <Compile Include="ObjectModule\BulletBase.cs" />
+    <Compile Include="ObjectModule\CoordBullet.cs" />
+    <Compile Include="ObjectModule\IMovable.cs" />
+    <Compile Include="ObjectModule\LineBullet.cs" />
+    <Compile Include="ObjectModule\MovementBase.cs" />
+    <Compile Include="ObjectModule\NormalMovement.cs" />
     <Compile Include="ObjectModule\Shield.cs" />
+    <Compile Include="ObjectModule\TrackBullet.cs" />
+    <Compile Include="ObjectModule\TrackMovement.cs" />
     <Compile Include="ObjectModule\UnitBase.cs">
       <SubType>Code</SubType>
     </Compile>

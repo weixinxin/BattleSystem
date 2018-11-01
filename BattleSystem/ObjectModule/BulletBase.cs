@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BattleSystem.SkillModule;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -58,6 +59,38 @@ namespace BattleSystem.ObjectModule
         public virtual void UpdatePosition(float x, float y, float z)
         {
 
+        }
+
+
+        protected int[] buffs = null;
+        public void InitBuff(int[] buffs)
+        {
+            this.buffs = buffs;
+        }
+
+        protected float radius = 0;
+
+        protected List<BuffEmitter> emitters = null;
+        protected float duration;
+        protected float interval;
+        public void InitAoeFile(float radius, float duration, float interval, List<BuffEmitter> emitters)
+        {
+            this.duration = duration;
+            this.interval = interval;
+            this.radius = radius;
+            for (int i = 0; i < emitters.Count; ++i)
+            {
+                emitters[i].Caster = this.Shooter;
+            }
+            this.emitters = emitters;
+        }
+
+        protected int damage = 0;
+        protected DamageType damageType;
+        public void InitDamage(int value, DamageType dt)
+        {
+            damage = value;
+            damageType = dt;
         }
 
     }

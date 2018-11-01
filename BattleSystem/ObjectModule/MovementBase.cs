@@ -10,6 +10,7 @@ namespace BattleSystem.ObjectModule
         public MovementBase() { }
 
         protected IMovable Owner;
+
         public MovementBase(IMovable obj)
         {
             Owner = obj;

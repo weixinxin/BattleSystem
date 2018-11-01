@@ -1,0 +1,88 @@
+﻿using BattleSystem.SkillModule;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace BattleSystem.ObjectModule
+{
+    /// <summary>
+    /// 直线飞行,到终点或者撞到第一个敌人爆炸
+    /// </summary>
+    public class LineBullet : BulletBase
+    {
+        
+        NormalMovement Movement;
+
+        float width;
+        List<UnitBase> res = new List<UnitBase>();
+        public LineBullet(UnitBase shooter, float width, Vector3 target)
+        {
+            this.Shooter = shooter;
+            this.width = width;
+            Movement = new NormalMovement(this, target);
+        }
+
+        public override bool Update(float dt)
+        {
+            float x = position.x;
+            float y = position.y;
+            if (Movement.Update(dt))
+            {
+                //AOE
+                if (radius > 0)
+                {
+                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, radius);
+                    AoeField aoe = new AoeField(Shooter, region, duration, interval, emitters);
+                    BattleInterface.Instance.AddAoeField(aoe);
+                }
+                return true;
+            }
+            else
+            {
+                var shift = speed * dt;
+
+                BattleInterface.Instance.world.SelectRect(x, y, Movement.shift.x, Movement.shift.y, this.width, shift, res, (obj) => obj.CampID != Shooter.CampID);
+
+                if(res.Count > 0)
+                {
+
+                    UnitBase unit = null;
+                    float sqr_dis = 0;
+                    for (int i = 0; i < res.Count; ++i)
+                    {
+
+                        float dx = res[i].position.x - x;
+                        float dy = res[i].position.y - y;
+                        var _sqr_dis = dx * dx + dy * dy;
+                        if (unit == null || _sqr_dis < sqr_dis)
+                        {
+                            unit = res[i];
+                            sqr_dis = _sqr_dis;
+                        }
+                    }
+                    //普攻伤害
+                    if (damage > 0)
+                        unit.LostHP(damage, Shooter, damageType, true);
+                    //给目标上buff
+                    if (buffs != null)
+                    {
+                        for (int i = 0; i < buffs.Length; ++i)
+                        {
+                            unit.AddBuff(buffs[i], Shooter);
+                        }
+                    }
+                    //AOE
+                    if (radius > 0)
+                    {
+                        AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, radius);
+                        AoeField aoe = new AoeField(Shooter, region, duration, interval, emitters);
+                        BattleInterface.Instance.AddAoeField(aoe);
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+}
