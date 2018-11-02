@@ -8,6 +8,11 @@ namespace BattleSystem.ObjectModule
 {
     public abstract class BulletBase : IMovable
     {
+        public static BulletBase Create(int templateID)
+        {
+
+        }
+
         private static int s_id = 1;
         protected static int id
         {

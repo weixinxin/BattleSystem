@@ -459,5 +459,29 @@ namespace BattleSystem.SkillModule
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    public class ShootBulletAction :SkillAction
+    {
+        int templateID;
+        public ShootBulletAction(int id)
+        {
+            this.templateID = id;
+        }
+
+
+        public override bool Execute(float dt)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override SkillAction Copy(Skill skill)
+        {
+            ShootBulletAction act = new ShootBulletAction(this.templateID);
+            act.mSkill = skill;
+            return act;
+        }
+    }
     
 }

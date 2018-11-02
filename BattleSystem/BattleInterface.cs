@@ -28,6 +28,8 @@ namespace BattleSystem
 
 
         private List<AoeField> mAoeFields = new List<AoeField>();
+
+        private List<BulletBase> mBullets = new List<BulletBase>();
         public WorldSpace world { get; private set; }
 
         public bool InitBattle(int campCount)
@@ -66,6 +68,14 @@ namespace BattleSystem
                     mUnits.RemoveAt(i);
                 }
             }
+            for (int i = mBullets.Count - 1; i >= 0; i--)
+            {
+
+                if (mBullets[i].Update(dt))
+                {
+                    mBullets.RemoveAt(i);
+                }
+            }
         }
 
         public UnitBase AddUnit(int templateID, int campID, int level)
@@ -86,6 +96,11 @@ namespace BattleSystem
         public void AddAoeField(AoeField aoe)
         {
             mAoeFields.Add(aoe);
+        }
+
+        public void AddBullet(BulletBase bullet)
+        {
+            mBullets.Add(bullet);
         }
 
         /// <summary>
@@ -134,7 +149,7 @@ namespace BattleSystem
             float sqr_dis = 0;
             var Group = mClampGroup[campID];
             for (int i = 0; i < Group.Count; ++i)
-            {
+            {  
                 if (id != Group[i].ID)
                 {
                     float dx = Group[i].position.x - x;
