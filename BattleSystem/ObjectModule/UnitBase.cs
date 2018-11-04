@@ -1,4 +1,5 @@
-﻿using BattleSystem.SkillModule;
+﻿using BattleSystem.Config;
+using BattleSystem.SkillModule;
 using BattleSystem.SpaceModule;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,11 @@ namespace BattleSystem.ObjectModule
         /// 唯一标识符
         /// </summary>
         public int ID { get; private set; }
+
+        /// <summary>
+        /// 模板ID
+        /// </summary>
+        public int TemplateID { get; private set; }
 
         /// <summary>
         /// 坐标
@@ -139,7 +145,7 @@ namespace BattleSystem.ObjectModule
         public bool isNegativeEffectImmunity { get { return mNegativeEffectImmunityCount > 0; } }
 
 
-        internal List<Buff> Buffs = new List<Buff>();
+        internal List<SkillModule.Buff> Buffs = new List<SkillModule.Buff>();
 
         /// <summary>
         /// 尝试往单位身上加buff
@@ -162,7 +168,7 @@ namespace BattleSystem.ObjectModule
                 if (Buffs[i].OverlayCheck(templateID))
                     return Buffs[i].OverlayTactics == OverlayTactics.kAddTime;
             }
-            var buff = new Buff(templateID, this, caster);
+            var buff = new SkillModule.Buff(templateID, this, caster);
             Buffs.Add(buff);
             return true;
         }
@@ -265,17 +271,20 @@ namespace BattleSystem.ObjectModule
         }
         public UnitBase(WorldSpace ws,int templateID, int campID, int level)
         {
-            ID = id;
-            CampID = campID;
-            HP = 100;
-            MaxHP = 100; 
-            mWorldSpace = ws; 
-            IsDead = false;
-            ATK = new Attribute(100, null);
-            MoveSpeed = new Attribute(100, null);
-            AttackDuration = new AttackDuration(100, null);
-            AttackRange = new Attribute(100, null);
-            VisualRange = new Attribute(100, null);
+            this.ID = id;
+            this.mWorldSpace = ws; 
+            this.TemplateID = templateID;
+            this.CampID = campID;
+            var config = ConfigManager.Unit.getRow(templateID);
+            this.HP = config.MaxHP;
+            this.MaxHP = config.MaxHP;
+            this.IsDead = false;
+
+            ATK = new Attribute(config.Attack, null);
+            MoveSpeed = new Attribute(config.MoveSpeed, null);
+            AttackDuration = new AttackDuration(config.AttackDuration, null);
+            AttackRange = new Attribute(config.AttackRange, null);
+            VisualRange = new Attribute(config.VisualRange, null);
 
         }
         /// <summary>
@@ -388,5 +397,6 @@ namespace BattleSystem.ObjectModule
         {
             get { return 0; }
         }
+        
     }
 }

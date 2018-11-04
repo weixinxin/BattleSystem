@@ -11,6 +11,24 @@ namespace BattleSystem.Config
         {
             [XmlAttribute("ID")]
             public int ID { get; set; }
+
+            [XmlAttribute("Buffs")]
+            public string _Buffs { get; set; }
+            private XMLValueArray<int> __Buffs__;
+            public XMLValueArray<int> Buffs
+            {
+                get
+                {
+                    if (__Buffs__ == null)
+                    {
+                        __Buffs__ = _Buffs;
+                    }
+                    return __Buffs__;
+                }
+            }
+
+            [XmlAttribute("AoeFilter")]
+            public AoeFilter AoeFilter { get; set; }
             
         }
 

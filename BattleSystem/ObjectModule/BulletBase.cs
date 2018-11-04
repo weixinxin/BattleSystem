@@ -8,10 +8,6 @@ namespace BattleSystem.ObjectModule
 {
     public abstract class BulletBase : IMovable
     {
-        public static BulletBase Create(int templateID)
-        {
-
-        }
 
         private static int s_id = 1;
         protected static int id
@@ -54,7 +50,7 @@ namespace BattleSystem.ObjectModule
         /// <returns>是否需要移除子弹</returns>
         public abstract bool Update(float dt);
 
-
+        public bool isAttack { get; protected set; }
         /// <summary>
         /// 更新坐标
         /// </summary>
@@ -63,7 +59,12 @@ namespace BattleSystem.ObjectModule
         /// <param name="z"></param>
         public virtual void UpdatePosition(float x, float y, float z)
         {
-
+            if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z) || float.IsInfinity(x) || float.IsInfinity(y) || float.IsInfinity(z))
+            {
+                Debug.LogErrorFormat("error: {0},{1},{2}", x, y, z);
+                return;
+            }
+            position = new Vector3(x, y, z);
         }
 
 
@@ -75,10 +76,10 @@ namespace BattleSystem.ObjectModule
 
         protected float radius = 0;
 
-        protected List<BuffEmitter> emitters = null;
+        protected List<SkillModule.BuffEmitter> emitters = null;
         protected float duration;
         protected float interval;
-        public void InitAoeFile(float radius, float duration, float interval, List<BuffEmitter> emitters)
+        public void InitAoeFile(float radius, float duration, float interval, List<SkillModule.BuffEmitter> emitters)
         {
             this.duration = duration;
             this.interval = interval;
@@ -92,10 +93,11 @@ namespace BattleSystem.ObjectModule
 
         protected int damage = 0;
         protected DamageType damageType;
-        public void InitDamage(int value, DamageType dt)
+        public void InitDamage(int value, DamageType dt, bool isAttack)
         {
             damage = value;
             damageType = dt;
+            this.isAttack = isAttack;
         }
 
     }

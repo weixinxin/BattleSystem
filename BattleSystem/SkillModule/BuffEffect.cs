@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Diagnostics;
 using BattleSystem.ObjectModule;
+using BattleSystem.Config;
 namespace BattleSystem.SkillModule
 {
     /// <summary>
@@ -42,7 +43,13 @@ namespace BattleSystem.SkillModule
         public BuffEffect(int templateID)
         {
             //根据模板ID获取参数
-
+            var config = ConfigManager.BuffEffect.getRow(templateID);
+            this.Type = config.BuffEffectType;
+            this.isPermanent = config.isPermanent;
+            this.BaseDelta = config.BaseDelta;
+            this.BasePercent = config.BasePercent;
+            this.CurDelta = config.CurDelta;
+            this.CurPercent = config.CurPercent;
         }
 
         private void ModifyAttribute(Attribute attribute,bool nagative)

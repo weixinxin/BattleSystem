@@ -63,7 +63,7 @@ namespace BattleSystem.ObjectModule
                     }
                     //普攻伤害
                     if (damage > 0)
-                        unit.LostHP(damage, Shooter, damageType, true);
+                        unit.LostHP(damage, Shooter, damageType, isAttack);
                     //给目标上buff
                     if (buffs != null)
                     {

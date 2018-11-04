@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<Unit ID="100001" MaxHP="10" Attack="1" MoveSpeed="1.0" AttackDuration="1.0" AttackRange="2" VisualRange="4.0" Skills="300001|300002"/>
+</root>

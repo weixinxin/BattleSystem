@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using BattleSystem.Config;
 
 namespace BattleSystem
 {
@@ -47,12 +48,13 @@ namespace BattleSystem
             {
                 mClampGroup[i] = new List<UnitBase>();
             }
+            GameTimeElapsed = 0;
             return true;
         }
 
         public void Update(float dt)
         {
-
+            GameTimeElapsed += dt;
             for (int i = mAoeFields.Count - 1; i >= 0; i--)
             {
                 if(mAoeFields[i].Update(dt))
@@ -77,7 +79,7 @@ namespace BattleSystem
                 }
             }
         }
-
+        public float GameTimeElapsed { get; private set; }
         public UnitBase AddUnit(int templateID, int campID, int level)
         {
             UnitBase unit = new UnitBase(world,templateID, campID, level);
@@ -102,7 +104,95 @@ namespace BattleSystem
         {
             mBullets.Add(bullet);
         }
+        
+        public BulletBase ShootBullet(int templateID,UnitBase shooter,UnitBase target,bool isAttack)
+        {
+            var config = ConfigManager.Bullet.getRow(templateID);
+            BulletBase bullet = null;
+            switch(config.BulletType)
+            {
+                case BulletType.kCoordBullet:
+                    bullet = new CoordBullet(shooter, target.position);
+                    break;
+                case BulletType.kLineBullet:
+                    if(config.FixRange > 0)
+                    {
+                        var offset = (target.position - shooter.position).normalized * config.FixRange;
+                        bullet = new LineBullet(shooter, config.Width, shooter.position + offset);
+                    }
+                    else
+                    {
+                        bullet = new LineBullet(shooter, config.Width, target.position);
+                    }
+                    break;
+                case BulletType.kPenteralBullet:
+                    if (config.FixRange > 0)
+                    {
+                        var offset = (target.position - shooter.position).normalized * config.FixRange;
+                        bullet = new PenetraBullet(shooter, config.Width, config.DecayScale, shooter.position + offset);
+                    }
+                    else
+                    {
+                        bullet = new PenetraBullet(shooter, config.Width, config.DecayScale, target.position);
+                    }
+                    break;
+                case BulletType.kReturnBullet:
+                    if (config.FixRange > 0)
+                    {
+                        var offset = (target.position - shooter.position).normalized * config.FixRange;
+                        bullet = new ReturnBullet(shooter, config.Width, config.DecayScale, shooter.position + offset);
+                    }
+                    else
+                    {
+                        bullet = new ReturnBullet(shooter, config.Width, config.DecayScale, target.position);
+                    }
+                    break;
+                case BulletType.kTrackBullet:
+                    bullet = new TrackBullet(shooter, target);
+                    break;
+                default:
+                    throw new NotImplementedException("not implemented type " + config.BulletType.ToString());
+            }
+            bullet.speed = config.Speed;
+            bullet.acceleration = config.Acceleration;
+            if (isAttack)
+            {
+                bullet.InitDamage((int)shooter.ATK.value, config.DamageType, isAttack);
+            }
+            else if (config.Damage > 0)
+            {
+                bullet.InitDamage(config.Damage, config.DamageType, isAttack);
+            }
+            if(config.AoeRadius > 0)
+            {
+                List<SkillModule.BuffEmitter> emitters = new List<SkillModule.BuffEmitter>(config.BuffEmitter.Length);
+                for(int i = 0;i <config.BuffEmitter.Length;++i)
+                {
+                    var emitter = new SkillModule.BuffEmitter();
+                    var emitter_config = ConfigManager.BuffEmitter.getRow(config.BuffEmitter[i]);
+                    for(int n = 0; n < emitter_config.Buffs.Length;++n)
+                    {
+                        emitter.buffs.Add(emitter_config.Buffs[n]);
+                    }
+                    emitter.Caster =shooter;
+                    emitter.filter = emitter_config.AoeFilter;
+                    emitters[i] = emitter;
 
+                }
+                bullet.InitAoeFile(config.AoeRadius, config.AoeDuration, config.AoeInterval, emitters);
+            }
+            if(config.Buffs.Length > 0)
+            {
+                int[] buffs = new int[config.Buffs.Length];
+                for (int n = 0; n < config.Buffs.Length; ++n)
+                {
+                    buffs[n] = config.Buffs[n];
+                }
+                bullet.InitBuff(buffs);
+            }
+            AddBullet(bullet);
+            return bullet;
+        }
         /// <summary>
         /// 找到血量最低的我方单位
         /// </summary>

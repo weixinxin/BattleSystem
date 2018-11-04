@@ -3,6 +3,7 @@ using BattleSystem.ObjectModule;
 using System.Collections.Generic;
 using LuaEngine;
 using System;
+using BattleSystem.Config;
 namespace BattleSystem.SkillModule
 {
     /// <summary>
@@ -10,10 +11,10 @@ namespace BattleSystem.SkillModule
     /// </summary>
     public enum OverlayTactics
     {
-        kCoexist,//多个共存
-        kSingleton,//不允许叠加
-        kReplace,//以新代旧
-        kAddTime,//增加持续时间
+        kCoexist = 0,//多个共存
+        kSingleton = 1,//不允许叠加
+        kReplace = 2,//以新代旧
+        kAddTime = 3,//增加持续时间
     }
 
     /// <summary>
@@ -108,20 +109,35 @@ namespace BattleSystem.SkillModule
         private LuaFunction mOnSpellHitHandle = null;
 
 
-        protected List<BuffEffect> mEffects;
+        protected BuffEffect[] mEffects;
 
         protected List<BuffEffect> mRunningEffects = new List<BuffEffect>();
         protected List<BuffEffect> mRunningScriptEffects = new List<BuffEffect>(); 
         protected int mPauseCount = 0;
-        public Buff(int templateID,UnitBase owner,UnitBase caster)
+        public Buff(int templateID, UnitBase owner, UnitBase caster)
         {
             this.mTemplateID = templateID;
             this.Owner = owner;
             this.Caster = caster;
             this.ID = id;
             mPauseCount = 0;
-
-            bool isScriptBuff = false; //是否有脚本
+            var config = ConfigManager.Buff.getRow(templateID);
+            bool isScriptBuff = config.isScriptBuff; //是否有脚本
+            this.Groups = config.Groups;
+            this.mRejectionGroups = config.RejectionGroups;
+            this.OverlayTactics = config.OverlayTactics;
+            this.Desc = config.Desc;
+            this.Delay = config.Delay;
+            this.isLoop = config.isLoop;
+            this.mCfgDuration = config.Duration;
+            this.isIndividual = config.isIndividual;
+            this.isClearable = config.isClearable;
+            this.isNegative = config.isNegative;
+            this.mEffects = new BuffEffect[config.BuffEffect.Length];
+            for (int i = 0; i < config.BuffEffect.Length; ++i)
+            {
+                this.mEffects[i] = new BuffEffect(config.BuffEffect[i]);
+            }
             if (isScriptBuff)
             {
                 var lua = LuaInterface.Singleton.GetLuaState();
@@ -153,7 +169,7 @@ namespace BattleSystem.SkillModule
                     }
                     else
                     {
-                        Debug.LogErrorFormat("buff/buff{0}.lua dont find init function !",templateID);
+                        Debug.LogErrorFormat("buff/buff{0}.lua dont find init function !", templateID);
                     }
                     mOnUnitWillDieHandle = mLuaBuff["OnUnitWillDie"] as LuaFunction;
                     if (mOnUnitWillDieHandle != null)
@@ -186,12 +202,8 @@ namespace BattleSystem.SkillModule
             }
 
 
-            //根据templateID 读取配置
-            mEffects = SkillManager.LoadBuffEffect(templateID);
-            this.Delay = 0;
-            mCfgDuration = 10;
-            Duration = mCfgDuration;
-            mDelay = Delay;
+            this.Duration = this.mCfgDuration;
+            this.mDelay = this.Delay;
             if (mDelay == 0)
                 Apply();
             mElapseTime = 0;
@@ -312,7 +324,7 @@ namespace BattleSystem.SkillModule
         protected virtual void Apply()
         {
             if (Owner.IsDead) return;
-            for (int i = 0; i < mEffects.Count; ++i)
+            for (int i = 0; i < mEffects.Length; ++i)
             {
                 if(mEffects[i].Apply(Owner,Caster))
                 {

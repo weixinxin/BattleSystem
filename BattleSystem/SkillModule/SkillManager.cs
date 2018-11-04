@@ -13,9 +13,5 @@ namespace BattleSystem.SkillModule
             return skillReader.LoadSkillAction(templateID,skill);
         }
 
-        public static List<BuffEffect> LoadBuffEffect(int templateID)
-        {
-            return new List<BuffEffect>();
-        }
     }
 }

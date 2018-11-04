@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+	<Skill ID="300001" Desc="测试技能1" Cost="1" CD="2.0" Paragraph="2" Duration="2.0|2.0" AutoCast="true"/>
+	<Skill ID="300002" Desc="测试技能2" Cost="1" CD="2.0" Paragraph="2" Duration="2.0|2.0" AutoCast="true"/>
+</root>

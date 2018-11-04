@@ -25,69 +25,65 @@
     public enum BuffEffectType
     {
         //物理伤害
-        kPhysicalDamage = 1,
+        kPhysicalDamage = 0,
         //魔法伤害
-        kMagicDamage,
+        kMagicDamage = 1,
         //真实伤害
-        kTrueDamage,
+        kTrueDamage =2,
         //治疗
-        kHeal,
+        kHeal =3,
         //移动加速
-        kSpeedUp,
+        kSpeedUp = 4,
         //移动减速
-        kSlowDown,
+        kSlowDown = 5,
         //减少技能CD
         //kCDReduction,
         //增加攻击力
-        kIncreaseATK,
+        kIncreaseATK = 6,
         //减少攻击力
-        kDecreaseATK,
+        kDecreaseATK = 7,
         //增加攻击速度
-        kIncreaseAttackSpeed,
+        kIncreaseAttackSpeed = 8,
         //减少攻击速度
-        kDecreaseAttackSpeed,
+        kDecreaseAttackSpeed = 9,
         //增加攻击距离
-        kExtendAttackRange,
+        kExtendAttackRange =10,
         //缩小攻击距离
-        kReduceAttackRange,
+        kReduceAttackRange = 11,
         //增加视野距离
-        kExtendVisualRange,
+        kExtendVisualRange = 12,
         //缩小视野距离
-        kReduceVisualRange,
+        kReduceVisualRange =13,
         //无法移动
-        kUnmovable,
+        kUnmovable = 14,
         //无法施法
-        kUnableCast,
+        kUnableCast = 15,
         //物理伤害免疫
-        kPhysicalDamageImmunity,
+        kPhysicalDamageImmunity = 16,
         //魔法伤害免疫
-        kMagicDamageImmunity,
+        kMagicDamageImmunity = 17,
         //无法攻击
-        kUnableAttack,
+        kUnableAttack = 18,
         //不被选中
-        kNotarget,
+        kNotarget = 19,
         //攻击失效
-        kAttackMiss,
+        kAttackMiss = 20,
         //不死
-        kDeathless,
+        kDeathless = 21,
         //负面效果免疫
-        kNegativeEffectImmunity,
+        kNegativeEffectImmunity = 22,
         //清除负面效果
-        kCleanse,
-    }
-    public enum BuffEvent
-    {
-
+        kCleanse = 23,
     }
 
     public enum DamageType
     {
         //物理伤害  
-        kPhysical,
+        kPhysical = 0,
         //魔法伤害
-        kMagic,
+        kMagic = 1,
         //真实伤害
-        kTrue,
+        kTrue = 2,
     }
     public enum EventCode
     {
@@ -121,8 +117,19 @@
 
     public enum AoeFilter
     {
-        kAll = 0,
+        kEnemy = 0,
         kAlly = 1,
-        kEnemy = 2,
+        kAll = 2,
+    }
+
+
+    public enum BulletType
+    {
+        kCoordBullet = 0,
+        kLineBullet = 1,
+        kPenteralBullet = 2,
+        kReturnBullet = 3,
+        kTrackBullet = 4,
     }
 }
+

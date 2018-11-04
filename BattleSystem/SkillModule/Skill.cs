@@ -1,4 +1,5 @@
 ﻿
+using BattleSystem.Config;
 using BattleSystem.ObjectModule;
 using System.Collections.Generic;
 namespace BattleSystem.SkillModule
@@ -66,7 +67,7 @@ namespace BattleSystem.SkillModule
 
 
         /// <summary>
-        /// 是否自动释放(被动技能)
+        /// 是否自动释放(被动技能,无需目标)
         /// </summary>
         public bool AutoCast { get; private set; }
 
@@ -84,9 +85,20 @@ namespace BattleSystem.SkillModule
         public Skill(UnitBase owner,int templateID,int id,int level = 1)
         {
             this.Owner = owner;
-            TemplateID = templateID;
+            this.TemplateID = templateID;
             ID = id;
-            Level = level;
+            var config = ConfigManager.Skill.getRow(templateID);
+            this.AutoCast = config.AutoCast;
+            this.CD = config.CD;
+            this.Cost = config.Cost;
+            this.Paragraph = config.Paragraph;
+            this.Desc = config.Desc;
+            this.Duration = new float[config.Duration.Length];
+            for (int i = 0; i < config.Duration.Length;++i)
+            {
+                this.Duration[i] = config.Duration[i];
+            }
+            this.Level = level;
             //通过模板ID获取配置数据
             mAction = SkillManager.LoadSkillAction(templateID,this);
 
@@ -183,6 +195,14 @@ namespace BattleSystem.SkillModule
                         {
                             mCDTime = CD;
                             Status = SkillStatus.kCoolDown;
+                        }
+                    }
+                    break;
+                case SkillStatus.kReady:
+                    {
+                        if(AutoCast)
+                        {
+                            Cast();
                         }
                     }
                     break;

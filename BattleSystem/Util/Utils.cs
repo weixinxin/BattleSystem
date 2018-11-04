@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using System.Xml.Serialization;
 
 namespace BattleSystem.Util
 {
@@ -37,7 +38,7 @@ namespace BattleSystem.Util
             string str = File.ReadAllText(fileName);
             return str;
         }
-         public static T SerializeFromXml<T>(string filePath)
+        public static T SerializeFromXml<T>(string filePath)
         {
             object result = null;
 
@@ -78,7 +79,7 @@ namespace BattleSystem.Util
                     else
                         xmlSerializer = new System.Xml.Serialization.XmlSerializer(type, new XmlRootAttribute(xmlRootName));
                     xmlSerializer.Serialize(writer, sourceObj);
-                    
+
                     return writer.ToString();
                 }
             }
@@ -86,5 +87,4 @@ namespace BattleSystem.Util
         }
     }
 
-    }
 }
