@@ -17,42 +17,42 @@
 
         public static float Sin(float f)
         {
-            return (float) Math.Sin((double) f);
+            return (float)Math.Sin((double)f);
         }
 
         public static float Cos(float f)
         {
-            return (float) Math.Cos((double) f);
+            return (float)Math.Cos((double)f);
         }
 
         public static float Tan(float f)
         {
-            return (float) Math.Tan((double) f);
+            return (float)Math.Tan((double)f);
         }
 
         public static float Asin(float f)
         {
-            return (float) Math.Asin((double) f);
+            return (float)Math.Asin((double)f);
         }
 
         public static float Acos(float f)
         {
-            return (float) Math.Acos((double) f);
+            return (float)Math.Acos((double)f);
         }
 
         public static float Atan(float f)
         {
-            return (float) Math.Atan((double) f);
+            return (float)Math.Atan((double)f);
         }
 
         public static float Atan2(float y, float x)
         {
-            return (float) Math.Atan2((double) y, (double) x);
+            return (float)Math.Atan2((double)y, (double)x);
         }
 
         public static float Sqrt(float f)
         {
-            return (float) Math.Sqrt((double) f);
+            return (float)Math.Sqrt((double)f);
         }
 
         public static float Abs(float f)
@@ -159,57 +159,57 @@
 
         public static float Pow(float f, float p)
         {
-            return (float) Math.Pow((double) f, (double) p);
+            return (float)Math.Pow((double)f, (double)p);
         }
 
         public static float Exp(float power)
         {
-            return (float) Math.Exp((double) power);
+            return (float)Math.Exp((double)power);
         }
 
         public static float Log(float f, float p)
         {
-            return (float) Math.Log((double) f, (double) p);
+            return (float)Math.Log((double)f, (double)p);
         }
 
         public static float Log(float f)
         {
-            return (float) Math.Log((double) f);
+            return (float)Math.Log((double)f);
         }
 
         public static float Log10(float f)
         {
-            return (float) Math.Log10((double) f);
+            return (float)Math.Log10((double)f);
         }
 
         public static float Ceil(float f)
         {
-            return (float) Math.Ceiling((double) f);
+            return (float)Math.Ceiling((double)f);
         }
 
         public static float Floor(float f)
         {
-            return (float) Math.Floor((double) f);
+            return (float)Math.Floor((double)f);
         }
 
         public static float Round(float f)
         {
-            return (float) Math.Round((double) f);
+            return (float)Math.Round((double)f);
         }
 
         public static int CeilToInt(float f)
         {
-            return (int) Math.Ceiling((double) f);
+            return (int)Math.Ceiling((double)f);
         }
 
         public static int FloorToInt(float f)
         {
-            return (int) Math.Floor((double) f);
+            return (int)Math.Floor((double)f);
         }
 
         public static int RoundToInt(float f)
         {
-            return (int) Math.Round((double) f);
+            return (int)Math.Round((double)f);
         }
 
         public static float Sign(float f)
@@ -280,7 +280,7 @@
 
         public static float MoveTowards(float current, float target, float maxDelta)
         {
-            if (Abs((float) (target - current)) <= maxDelta)
+            if (Abs((float)(target - current)) <= maxDelta)
             {
                 return target;
             }
@@ -325,7 +325,7 @@
         public static float PingPong(float t, float length)
         {
             t = Repeat(t, length * 2f);
-            return (length - Abs((float) (t - length)));
+            return (length - Abs((float)(t - length)));
         }
 
         public static float InverseLerp(float a, float b, float value)
@@ -352,7 +352,7 @@
         {
             byte[] buffer = new byte[8];
             r.NextBytes(buffer);
-            return (((long) BitConverter.ToUInt64(buffer, 0)) & 0x7fffffffffffffffL);
+            return (((long)BitConverter.ToUInt64(buffer, 0)) & 0x7fffffffffffffffL);
         }
     }
 }

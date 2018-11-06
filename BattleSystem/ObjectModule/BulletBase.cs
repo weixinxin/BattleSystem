@@ -18,7 +18,6 @@ namespace BattleSystem.ObjectModule
             }
         }
 
-        protected MovementBase Movement;
         /// <summary>
         /// 唯一标识符
         /// </summary>
@@ -28,10 +27,29 @@ namespace BattleSystem.ObjectModule
         /// </summary>
         public UnitBase Shooter { get; protected set; }
 
+
         /// <summary>
         /// 坐标
         /// </summary>
-        public Vector3 position { get; protected set; }
+        public Vector3 position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+#if DEBUG
+                if (float.IsNaN(value.x) || float.IsNaN(value.y) || float.IsNaN(value.z) || float.IsInfinity(value.x) || float.IsInfinity(value.y) || float.IsInfinity(value.z))
+                {
+                    Debug.LogErrorFormat("error: {0},{1},{2}", value.x, value.y, value.z);
+                    return;
+                }
+#endif
+                _position = value;
+            }
+        }
+        private Vector3 _position = Vector3.zero;
 
 
         /// <summary>
@@ -74,7 +92,7 @@ namespace BattleSystem.ObjectModule
             this.buffs = buffs;
         }
 
-        protected float radius = 0;
+        protected float aoeRadius = 0;
 
         protected List<SkillModule.BuffEmitter> emitters = null;
         protected float duration;
@@ -83,7 +101,7 @@ namespace BattleSystem.ObjectModule
         {
             this.duration = duration;
             this.interval = interval;
-            this.radius = radius;
+            this.aoeRadius = radius;
             for (int i = 0; i < emitters.Count; ++i)
             {
                 emitters[i].Caster = this.Shooter;
@@ -100,5 +118,11 @@ namespace BattleSystem.ObjectModule
             this.isAttack = isAttack;
         }
 
+
+        public float radius
+        {
+            get;
+            set;
+        }
     }
 }

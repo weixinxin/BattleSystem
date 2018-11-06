@@ -8,14 +8,20 @@ namespace BattleSystem.ObjectModule
     public class TrackMovement : MovementBase
     {
         IMovable Target;
-        public TrackMovement(IMovable owner, IMovable target)
+        float collision = 0;
+        public TrackMovement(IMovable owner)
         {
             Owner = owner;
+        }
+        public void Retarget(IMovable target,float distance = 0)
+        {
             Target = target;
+            collision = Owner.radius + target.radius + distance;
         }
         public override bool Update(float dt)
         {
             var dis = Target.position - Owner.position;
+
             if (Owner.acceleration != 0)
                 Owner.speed += Owner.acceleration * dt;
             var shift_len = Owner.speed * dt;
@@ -28,9 +34,17 @@ namespace BattleSystem.ObjectModule
             }
             else
             {
-                var arg = shift_len / (float)Math.Sqrt(sqr_length);
-                Owner.position += dis * arg;
-                return false;
+                var length = (float)Math.Sqrt(sqr_length);
+                if(length > collision)
+                {
+                    var arg = shift_len / length;
+                    Owner.position += dis * arg;
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
             }
         }
     }

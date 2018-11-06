@@ -186,13 +186,13 @@
 
         public static float Angle( Vector3 from,  Vector3 to)
         {
-            return ( Mathf.Acos( Mathf.Clamp(Dot(from.normalized, to.normalized), -1f, 1f)) * 57.29578f);
+            return (float)( Math.Acos( Mathf.Clamp(Dot(from.normalized, to.normalized), -1f, 1f)) * 57.29578f);
         }
 
         public static float Distance( Vector3 a,  Vector3 b)
         {
              Vector3 vector = new  Vector3(a.x - b.x, a.y - b.y, a.z - b.z);
-            return  Mathf.Sqrt(((vector.x * vector.x) + (vector.y * vector.y)) + (vector.z * vector.z));
+             return (float)Math.Sqrt(((vector.x * vector.x) + (vector.y * vector.y)) + (vector.z * vector.z));
         }
 
         public static  Vector3 ClampMagnitude( Vector3 vector, float maxLength)
@@ -206,14 +206,14 @@
 
         public static float Magnitude( Vector3 a)
         {
-            return  Mathf.Sqrt(((a.x * a.x) + (a.y * a.y)) + (a.z * a.z));
+            return (float)Math.Sqrt(((a.x * a.x) + (a.y * a.y)) + (a.z * a.z));
         }
 
         public float magnitude
         {
             get
             {
-                return  Mathf.Sqrt(((this.x * this.x) + (this.y * this.y)) + (this.z * this.z));
+                return (float)Math.Sqrt(((this.x * this.x) + (this.y * this.y)) + (this.z * this.z));
             }
         }
         public static float SqrMagnitude( Vector3 a)
@@ -230,12 +230,12 @@
         }
         public static  Vector3 Min( Vector3 lhs,  Vector3 rhs)
         {
-            return new  Vector3( Mathf.Min(lhs.x, rhs.x),  Mathf.Min(lhs.y, rhs.y),  Mathf.Min(lhs.z, rhs.z));
+            return new  Vector3( Math.Min(lhs.x, rhs.x),  Math.Min(lhs.y, rhs.y),  Math.Min(lhs.z, rhs.z));
         }
 
         public static  Vector3 Max( Vector3 lhs,  Vector3 rhs)
         {
-            return new  Vector3( Mathf.Max(lhs.x, rhs.x),  Mathf.Max(lhs.y, rhs.y),  Mathf.Max(lhs.z, rhs.z));
+            return new  Vector3( Math.Max(lhs.x, rhs.x),  Math.Max(lhs.y, rhs.y),  Math.Max(lhs.z, rhs.z));
         }
 
         public static  Vector3 zero

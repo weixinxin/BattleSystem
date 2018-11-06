@@ -15,6 +15,8 @@ namespace BattleSystem.ObjectModule
         float speed { get; set; }
 
         float acceleration { get; }
-        void UpdatePosition(float x, float y, float z);
+
+
+        float radius { get; set; }
     }
 }

@@ -10,8 +10,6 @@ namespace BattleSystem.ObjectModule
     {
         NormalMovement Movement;
 
-        float width;
-
         float damageScale = 1.0f;
         bool arrive = false;
 
@@ -27,14 +25,14 @@ namespace BattleSystem.ObjectModule
         /// <param name="width">弹道宽度</param>
         /// <param name="decayScale">伤害衰减系数</param>
         /// <param name="target">终点</param>
-        public ReturnBullet(UnitBase shooter, float width, float decayScale, Vector3 target)
+        public ReturnBullet(UnitBase shooter, float decayScale, Vector3 target)
         {
             this.arrive = false;
             this.Shooter = shooter;
-            this.width = width;
             this.decayScale = decayScale;
             this.damageScale = 1.0f;
-            Movement = new NormalMovement(this, target);
+            Movement = new NormalMovement(this);
+            Movement.Retarget(target);
         }
         public override bool Update(float dt)
         {
@@ -58,7 +56,7 @@ namespace BattleSystem.ObjectModule
                 var shift = speed * dt;
 
                 List<UnitBase> res = new List<UnitBase>();
-                BattleInterface.Instance.world.SelectRect(x, y, Movement.shift.x, Movement.shift.y, this.width, shift, res, (obj) => obj.CampID != Shooter.CampID);
+                BattleInterface.Instance.world.SelectRect(x, y, Movement.shift.x, Movement.shift.y, this.radius * 2, shift, res, (obj) => obj.CampID != Shooter.CampID);
 
                 if (res.Count > 0)
                 {

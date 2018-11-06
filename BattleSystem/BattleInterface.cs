@@ -118,33 +118,33 @@ namespace BattleSystem
                     if(config.FixRange > 0)
                     {
                         var offset = (target.position - shooter.position).normalized * config.FixRange;
-                        bullet = new LineBullet(shooter, config.Width, shooter.position + offset);
+                        bullet = new LineBullet(shooter, shooter.position + offset);
                     }
                     else
                     {
-                        bullet = new LineBullet(shooter, config.Width, target.position);
+                        bullet = new LineBullet(shooter, target.position);
                     }
                     break;
                 case BulletType.kPenteralBullet:
                     if (config.FixRange > 0)
                     {
                         var offset = (target.position - shooter.position).normalized * config.FixRange;
-                        bullet = new PenetraBullet(shooter, config.Width, config.DecayScale, shooter.position + offset);
+                        bullet = new PenetraBullet(shooter, config.DecayScale, shooter.position + offset);
                     }
                     else
                     {
-                        bullet = new PenetraBullet(shooter, config.Width, config.DecayScale, target.position);
+                        bullet = new PenetraBullet(shooter,  config.DecayScale, target.position);
                     }
                     break;
                 case BulletType.kReturnBullet:
                     if (config.FixRange > 0)
                     {
                         var offset = (target.position - shooter.position).normalized * config.FixRange;
-                        bullet = new ReturnBullet(shooter, config.Width, config.DecayScale, shooter.position + offset);
+                        bullet = new ReturnBullet(shooter, config.DecayScale, shooter.position + offset);
                     }
                     else
                     {
-                        bullet = new ReturnBullet(shooter, config.Width, config.DecayScale, target.position);
+                        bullet = new ReturnBullet(shooter, config.DecayScale, target.position);
                     }
                     break;
                 case BulletType.kTrackBullet:
@@ -153,6 +153,7 @@ namespace BattleSystem
                 default:
                     throw new NotImplementedException("not implemented type " + config.BulletType.ToString());
             }
+            bullet.radius = config.Radius;
             bullet.speed = config.Speed;
             bullet.acceleration = config.Acceleration;
             if (isAttack)

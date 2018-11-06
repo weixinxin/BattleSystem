@@ -13,8 +13,6 @@ namespace BattleSystem.ObjectModule
     {
         NormalMovement Movement;
 
-        float width;
-
         float damageScale = 1.0f;
 
         /// <summary>
@@ -29,13 +27,13 @@ namespace BattleSystem.ObjectModule
         /// <param name="width">弹道宽度</param>
         /// <param name="decayScale">伤害衰减系数</param>
         /// <param name="target">终点</param>
-        public PenetraBullet(UnitBase shooter, float width, float decayScale, Vector3 target)
+        public PenetraBullet(UnitBase shooter, float decayScale, Vector3 target)
         {
             this.Shooter = shooter;
-            this.width = width;
             this.decayScale = decayScale;
             this.damageScale = 1.0f;
-            Movement = new NormalMovement(this, target);
+            Movement = new NormalMovement(this);
+            Movement.Retarget(target);
         }
         public override bool Update(float dt)
         {
@@ -45,9 +43,9 @@ namespace BattleSystem.ObjectModule
             if (Movement.Update(dt))
             {
                 //AOE
-                if (radius > 0)
+                if (aoeRadius > 0)
                 {
-                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, radius);
+                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, aoeRadius);
                     AoeField aoe = new AoeField(Shooter, region, duration, interval, emitters);
                     BattleInterface.Instance.AddAoeField(aoe);
                 }
@@ -58,7 +56,7 @@ namespace BattleSystem.ObjectModule
                 var shift = speed * dt;
 
                 List<UnitBase> res = new List<UnitBase>();
-                BattleInterface.Instance.world.SelectRect(x, y, Movement.shift.x, Movement.shift.y, this.width, shift, res, (obj) => obj.CampID != Shooter.CampID);
+                BattleInterface.Instance.world.SelectRect(x, y, Movement.shift.x, Movement.shift.y, this.radius * 2, shift, res, (obj) => obj.CampID != Shooter.CampID);
 
                 if (res.Count > 0)
                 {

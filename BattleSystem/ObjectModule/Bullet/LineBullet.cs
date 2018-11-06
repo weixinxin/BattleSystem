@@ -14,13 +14,12 @@ namespace BattleSystem.ObjectModule
         
         NormalMovement Movement;
 
-        float width;
         List<UnitBase> res = new List<UnitBase>();
-        public LineBullet(UnitBase shooter, float width, Vector3 target)
+        public LineBullet(UnitBase shooter, Vector3 target)
         {
             this.Shooter = shooter;
-            this.width = width;
-            Movement = new NormalMovement(this, target);
+            Movement = new NormalMovement(this);
+            Movement.Retarget(target);
         }
 
         public override bool Update(float dt)
@@ -30,9 +29,9 @@ namespace BattleSystem.ObjectModule
             if (Movement.Update(dt))
             {
                 //AOE
-                if (radius > 0)
+                if (aoeRadius > 0)
                 {
-                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, radius);
+                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, aoeRadius);
                     AoeField aoe = new AoeField(Shooter, region, duration, interval, emitters);
                     BattleInterface.Instance.AddAoeField(aoe);
                 }
@@ -42,7 +41,7 @@ namespace BattleSystem.ObjectModule
             {
                 var shift = speed * dt;
 
-                BattleInterface.Instance.world.SelectRect(x, y, Movement.shift.x, Movement.shift.y, this.width, shift, res, (obj) => obj.CampID != Shooter.CampID);
+                BattleInterface.Instance.world.SelectRect(x, y, Movement.shift.x, Movement.shift.y, this.radius * 2, shift, res, (obj) => obj.CampID != Shooter.CampID);
 
                 if(res.Count > 0)
                 {
@@ -73,9 +72,9 @@ namespace BattleSystem.ObjectModule
                         }
                     }
                     //AOE
-                    if (radius > 0)
+                    if (aoeRadius > 0)
                     {
-                        AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, radius);
+                        AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, aoeRadius);
                         AoeField aoe = new AoeField(Shooter, region, duration, interval, emitters);
                         BattleInterface.Instance.AddAoeField(aoe);
                     }

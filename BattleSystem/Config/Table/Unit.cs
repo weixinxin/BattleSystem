@@ -24,6 +24,9 @@ namespace BattleSystem.Config
             [XmlAttribute("Attack")]
             public int Attack { get; set; }
 
+            [XmlAttribute("Radius")]
+            public float Radius { get; set; }
+
 
             [XmlAttribute("MoveSpeed")]
             public float MoveSpeed { get; set; }

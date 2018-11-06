@@ -16,7 +16,8 @@ namespace BattleSystem.ObjectModule
 
         public CoordBullet(UnitBase shooter,Vector3 target)
         {
-            Movement = new NormalMovement(this, target);
+            Movement = new NormalMovement(this);
+            Movement.Retarget(target);
         }
 
 
@@ -26,9 +27,9 @@ namespace BattleSystem.ObjectModule
             if (Movement.Update(dt))
             {
                 //AOE
-                if (radius > 0)
+                if (aoeRadius > 0)
                 {
-                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, radius);
+                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world, position.x, position.y, aoeRadius);
                     AoeField aoe = new AoeField(Shooter, region, duration, interval, emitters);
                     BattleInterface.Instance.AddAoeField(aoe);
                 }

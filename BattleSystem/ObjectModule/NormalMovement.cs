@@ -7,10 +7,9 @@ namespace BattleSystem.ObjectModule
         Vector3 Target;
 
         public Vector3 shift{get;private set;}
-        public NormalMovement(IMovable owner, Vector3 target)
+        public NormalMovement(IMovable owner)
         {
             Owner = owner;
-            Retarget(target);
         }
         public void Retarget(Vector3 pos)
         {

@@ -20,7 +20,8 @@ namespace BattleSystem.ObjectModule
             ID = id;
             Shooter = shooter;
             Target = target;
-            Movement = new TrackMovement(this, target);
+            Movement = new TrackMovement(this);
+            Movement.Retarget(target);
         }
 
 
@@ -40,9 +41,9 @@ namespace BattleSystem.ObjectModule
                     }
                 }
                 //AOE
-                if (radius > 0)
+                if (aoeRadius > 0)
                 {
-                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world,position.x,position.y,radius);
+                    AoeRegion region = new CircleRegion(BattleInterface.Instance.world,position.x,position.y,aoeRadius);
                     AoeField aoe = new AoeField(Shooter, region, duration, interval, emitters);
                     BattleInterface.Instance.AddAoeField(aoe);
                 }

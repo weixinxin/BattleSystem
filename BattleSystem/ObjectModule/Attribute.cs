@@ -34,6 +34,7 @@ namespace BattleSystem.ObjectModule
 
         protected float mLastValue = 0;
 
+
         protected bool isDirty = true;
         public Attribute()
         {
@@ -138,6 +139,42 @@ namespace BattleSystem.ObjectModule
             }
         }
 
+
+    }
+
+    public class DistanceAttribute:Attribute
+    {
+        float mSqrValue;
+        public DistanceAttribute(float v, FloatDelegate callBack = null):base(v,callBack)
+        {
+
+        }
+        public override float value
+        {
+            get
+            {
+                if (isDirty)
+                {
+                    mLastValue = (mBaseValue + mBaseDelta + mBaseValue * mBasePercent) * mPercentage + mCurDelta;
+                    mSqrValue = mLastValue * mLastValue;
+                    isDirty = false;
+                }
+                return mLastValue;
+            }
+        }
+        public virtual float sqrValue
+        {
+            get
+            {
+                if (isDirty)
+                {
+                    mLastValue = (mBaseValue + mBaseDelta + mBaseValue * mBasePercent) * mPercentage + mCurDelta;
+                    mSqrValue = mLastValue * mLastValue;
+                    isDirty = false;
+                }
+                return mSqrValue;
+            }
+        }
     }
     public class AttackDuration : Attribute
     {

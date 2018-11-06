@@ -14,6 +14,8 @@ namespace BattleSystem.ObjectModule
         private WorldSpace mWorldSpace = null;
 
         internal GridNode mGridNode = null;
+
+        private SkillModule.Skill[] mSkills = null;
         /// <summary>
         /// 唯一标识符
         /// </summary>
@@ -27,7 +29,27 @@ namespace BattleSystem.ObjectModule
         /// <summary>
         /// 坐标
         /// </summary>
-        public Vector3 position { get; protected set; }
+        public Vector3 position
+        {
+            get
+            {
+                return _position;
+            }
+            set
+            {
+
+#if DEBUG
+                if (float.IsNaN(value.x) || float.IsNaN(value.y) || float.IsNaN(value.z) || float.IsInfinity(value.x) || float.IsInfinity(value.y) || float.IsInfinity(value.z))
+                {
+                    Debug.LogErrorFormat("error: {0},{1},{2}", value.x, value.y, value.z);
+                    return;
+                }
+#endif
+                _position = value;
+                mWorldSpace.UpdateNode(this);
+            }
+        }
+        private Vector3 _position = Vector3.zero;
         /// <summary>
         /// 护盾
         /// </summary>
@@ -73,19 +95,19 @@ namespace BattleSystem.ObjectModule
         /// <summary>
         /// 攻击距离
         /// </summary>
-        public Attribute AttackRange { get; set; }
-        
+        public DistanceAttribute AttackRange { get; set; }
+
         /// <summary>
         /// 视野
         /// </summary>
-        public Attribute VisualRange { get; set; }
+        public DistanceAttribute VisualRange { get; set; }
 
         /// <summary>
         /// 阵营ID
         /// </summary>
         public int CampID { get; set; }
 
-        
+        public UnitBase AttackTarget { get; set; }
 
         private int mAttackMissCount = 0;
         private int mMagicDamageImmunityCount = 0;
@@ -96,7 +118,7 @@ namespace BattleSystem.ObjectModule
         private int mUnmovableCount = 0;
         private int mDeathlessCount = 0;
         private int mNegativeEffectImmunityCount = 0;
-        
+
 
         /// <summary>
         /// 是否处于攻击失效状态
@@ -138,7 +160,7 @@ namespace BattleSystem.ObjectModule
         /// </summary>
         public bool isDeathless { get { return mDeathlessCount > 0; } }
 
-        
+
         /// <summary>
         /// 是否免疫负面效果
         /// </summary>
@@ -153,12 +175,12 @@ namespace BattleSystem.ObjectModule
         /// <param name="templateID">模板id</param>
         /// <param name="caster">施法者</param>
         /// <returns>是否成功</returns>
-   
-        internal bool AddBuff(int templateID,UnitBase caster)
+
+        internal bool AddBuff(int templateID, UnitBase caster)
         {
             if (IsDead) return false;
             int Groups = 1;//读取配置获取所属组
-            for(int i = Buffs.Count - 1; i >=0;--i)
+            for (int i = Buffs.Count - 1; i >= 0; --i)
             {
                 if (Buffs[i].MutexCheck(Groups))
                     return false;
@@ -259,7 +281,7 @@ namespace BattleSystem.ObjectModule
                     break;
             }
         }
-        public UnitBase(){}
+        public UnitBase() { }
 
         private static int s_id = 1;
         private static int id
@@ -269,10 +291,10 @@ namespace BattleSystem.ObjectModule
                 return s_id++;
             }
         }
-        public UnitBase(WorldSpace ws,int templateID, int campID, int level)
+        public UnitBase(WorldSpace ws, int templateID, int campID, int level)
         {
             this.ID = id;
-            this.mWorldSpace = ws; 
+            this.mWorldSpace = ws;
             this.TemplateID = templateID;
             this.CampID = campID;
             var config = ConfigManager.Unit.getRow(templateID);
@@ -281,23 +303,29 @@ namespace BattleSystem.ObjectModule
             this.IsDead = false;
 
             ATK = new Attribute(config.Attack, null);
+            radius = config.Radius;
             MoveSpeed = new Attribute(config.MoveSpeed, null);
             AttackDuration = new AttackDuration(config.AttackDuration, null);
-            AttackRange = new Attribute(config.AttackRange, null);
-            VisualRange = new Attribute(config.VisualRange, null);
-
+            AttackRange = new DistanceAttribute(config.AttackRange, null);
+            VisualRange = new DistanceAttribute(config.VisualRange, null);
+            mSkills = new SkillModule.Skill[config.Skills.Length];
+            for (int i = 0; i < mSkills.Length; ++i)
+            {
+                mSkills[i] = new SkillModule.Skill(this, config.Skills[i], level);
+            }
+            InitController();
         }
         /// <summary>
         /// 单位受到治疗
         /// </summary>
         /// <param name="delta">治疗量</param>
         /// <param name="healer">治疗者</param>
-        public void AddHP(int delta,UnitBase healer)
+        public void AddHP(int delta, UnitBase healer)
         {
             if (IsDead) return;
             var offset = BuffManager.OnUnitWillHeal(this, healer, delta);
             delta += offset;
-            if(delta > 0)
+            if (delta > 0)
             {
                 var origin = HP;
                 HP = HP + delta;
@@ -312,7 +340,7 @@ namespace BattleSystem.ObjectModule
         /// <param name="assailant">攻击者</param>
         /// <param name="dt">伤害类型</param>
         /// <param name="isAttack">是否普攻</param>
-        public void LostHP(int delta, UnitBase assailant, DamageType dt,bool isAttack)
+        public void LostHP(int delta, UnitBase assailant, DamageType dt, bool isAttack)
         {
             if (IsDead) return;
             var offset = BuffManager.OnUnitWillHurt(this, assailant, delta, dt, isAttack);
@@ -355,12 +383,16 @@ namespace BattleSystem.ObjectModule
         /// <returns>是否可以销毁单位</returns>
         public virtual bool Update(float dt)
         {
-            if(IsDead)
+            if (IsDead)
             {
                 mDestroyCountdown -= dt;
             }
             else
             {
+                for (int i = 0; i < mSkills.Length; ++i)
+                {
+                    mSkills[i].Update(dt);
+                }
                 //更新并移除已经结束的buff
                 for (int i = Buffs.Count - 1; i >= 0; --i)
                 {
@@ -370,20 +402,9 @@ namespace BattleSystem.ObjectModule
                         Buffs.RemoveAt(i);
                     }
                 }
+
             }
             return mDestroyCountdown <= 0;
-        }
-
-
-        public void UpdatePosition(float x, float y, float z)
-        {
-            if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z) || float.IsInfinity(x) || float.IsInfinity(y) || float.IsInfinity(z))
-            {
-                Debug.LogErrorFormat("error: {0},{1},{2}", x, y, z);
-                return;
-            }
-            position = new Vector3(x, y, z);
-            mWorldSpace.UpdateNode(this);
         }
 
         public float speed
@@ -397,6 +418,37 @@ namespace BattleSystem.ObjectModule
         {
             get { return 0; }
         }
-        
+
+
+
+        public float radius
+        {
+            get;
+            set;
+        }
+
+        public bool InAttackRange(UnitBase target)
+        {
+            var sqr = this.AttackRange.sqrValue;
+            var dx = target.position.x - position.x;
+            var dy = target.position.y - position.y;
+            var sqr_dis = dx * dx + dy * dy;
+            return sqr_dis <= sqr;
+        }
+        public bool InVisualRange(UnitBase target)
+        {
+            var sqr = this.VisualRange.sqrValue;
+            var dx = target.position.x - position.x;
+            var dy = target.position.y - position.y;
+            var sqr_dis = dx * dx + dy * dy;
+            return sqr_dis <= sqr;
+        }
+
+        public UnitController Controller { get; protected set; }
+
+        public virtual void InitController()
+        {
+            Controller = new UnitController(this);
+        }
     }
 }

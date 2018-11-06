@@ -15,8 +15,9 @@ namespace BattleSystem.Config
             [XmlAttribute("BulletType")]
             public BulletType BulletType { get; set; }
 
-            [XmlAttribute("Width")]
-            public float Width { get; set; }
+
+            [XmlAttribute("Radius")]
+            public float Radius { get; set; }
 
             [XmlAttribute("FixRange")]
             public float FixRange { get; set; }

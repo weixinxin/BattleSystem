@@ -13,6 +13,14 @@ namespace BattleSystem.SkillModule
     public class Skill
     {
 
+        private static int s_id = 0;
+        private static int id
+        {
+            get
+            {
+                return s_id++;
+            }
+        }
         /// <summary>
         /// 技能持有者
         /// </summary>
@@ -82,7 +90,7 @@ namespace BattleSystem.SkillModule
         /// <param name="templateID">技能模板ID</param>
         /// <param name="id">技能ID</param>
         /// <param name="level">技能等级</param>
-        public Skill(UnitBase owner,int templateID,int id,int level = 1)
+        public Skill(UnitBase owner,int templateID,int level = 1)
         {
             this.Owner = owner;
             this.TemplateID = templateID;

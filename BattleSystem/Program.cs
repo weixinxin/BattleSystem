@@ -125,7 +125,7 @@ namespace BattleSystem
                 for (int x = 0; x < unitCount; ++x)
                 {
                     UnitBase obj = new UnitBase(world, 0, 0, 0);
-                    obj.UpdatePosition(rnd.Next((int)w_width), rnd.Next((int)w_height), 0);
+                    obj.position = new Vector3(rnd.Next((int)w_width), rnd.Next((int)w_height), 0);
                     all.Add(obj);
                 }
                 Stopwatch stopwatch1 = new Stopwatch();
@@ -217,15 +217,15 @@ namespace BattleSystem
                     for (int y = 0; y < (int)(w_height / w_grid); ++y)
                     {
                         var unit = BattleInterface.Instance.AddUnit(0, rnd.Next(0, 1), 0);
-                        unit.UpdatePosition(x * w_grid + w_grid * 0.5f, y * w_grid + w_grid * 0.5f, 0);
+                        unit.position = new Vector3(x * w_grid + w_grid * 0.5f, y * w_grid + w_grid * 0.5f, 0);
                     }
                 }
 
                 var unit1 = BattleInterface.Instance.AddUnit(0, 1, 0);
-                unit1.UpdatePosition(100f, 100f, 0);
+                unit1.position = new Vector3(100f, 100f, 0);
 
                 var unit2 = BattleInterface.Instance.AddUnit(0, 1, 0);
-                unit2.UpdatePosition(200f, 100f, 0);
+                unit2.position = new Vector3(200f, 100f, 0);
 
                 //Stopwatch stopwatch1 = new Stopwatch();
 
@@ -256,7 +256,7 @@ namespace BattleSystem
                 for (int y = 0; y < (int)(w_height / w_grid); ++y)
                 {
                     UnitBase obj = new UnitBase(world, 0, 0, 0);
-                    obj.UpdatePosition(x * w_grid + w_grid * 0.5f, y * w_grid + w_grid * 0.5f, 0);
+                    obj.position = new Vector3(x * w_grid + w_grid * 0.5f, y * w_grid + w_grid * 0.5f, 0);
                     all.Add(obj);
                     //Console.WriteLine(obj.position.ToString());
                 }
@@ -339,7 +339,7 @@ namespace BattleSystem
                 for (int y = 0; y < (int)(w_height / w_grid); ++y)
                 {
                     UnitBase obj = new UnitBase(world, 0, 0, 0);
-                    obj.UpdatePosition(x * w_grid + w_grid * 0.5f, y * w_grid + w_grid * 0.5f, 0);
+                    obj.position = new Vector3(x * w_grid + w_grid * 0.5f, y * w_grid + w_grid * 0.5f, 0);
                     all.Add(obj);
                     //Console.WriteLine(obj.position.ToString());
                 }
@@ -434,7 +434,7 @@ namespace BattleSystem
                 for (int x = 0; x < unitCount; ++x)
                 {
                     UnitBase obj = new UnitBase(world, 0, 0, 0);
-                    obj.UpdatePosition(rnd.Next((int)w_width), rnd.Next((int)w_height), 0);
+                    obj.position = new Vector3(rnd.Next((int)w_width), rnd.Next((int)w_height), 0);
                     all.Add(obj);
                 }
                 Stopwatch stopwatch1 = new Stopwatch();
