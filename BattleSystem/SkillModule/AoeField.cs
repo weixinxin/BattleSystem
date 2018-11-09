@@ -9,7 +9,7 @@ namespace BattleSystem.SkillModule
     public class BuffEmitter
     {
         public AoeFilter filter;
-        public List<int> buffs = new List<int>();
+        public int[] buffs;
         public UnitBase Caster;
         public Predicate<UnitBase> condition
         {
@@ -28,6 +28,18 @@ namespace BattleSystem.SkillModule
                         return null;
                 }
             }
+        }
+
+        public BuffEmitter Copy()
+        {
+            BuffEmitter emitter = new BuffEmitter();
+            emitter.buffs = new int[buffs.Length];
+            for(int i = 0;i< buffs.Length;++i)
+            {
+                emitter.buffs[i] = buffs[i];
+            }
+            emitter.filter = filter;
+            return emitter;
         }
     }
     public class AoeField
@@ -89,17 +101,18 @@ namespace BattleSystem.SkillModule
         {
             for(var i = 0; i < BuffEmitters.Count;++i)
             {
+                var BuffEmitter = BuffEmitters[i];
                 List<UnitBase> ls = new List<UnitBase>();
-                if(mRegion.Select(ls, BuffEmitters[i].condition))
+                if (mRegion.Select(ls, BuffEmitter.condition))
                 {
-                    for(var idx = 0;idx < ls.Count;++i)
+                    for (var idx = 0; idx < ls.Count; ++idx)
                     {
-                        UnitBase unit = ls[i] as UnitBase;
+                        UnitBase unit = ls[idx] as UnitBase;
                         if(unit != null)
                         {
-                            for(var n =0; n < BuffEmitters[i].buffs.Count;++n)
+                            for (var n = 0; n < BuffEmitter.buffs.Length; ++n)
                             {
-                                unit.AddBuff(BuffEmitters[i].buffs[n],Caster);
+                                unit.AddBuff(BuffEmitter.buffs[n], Caster);
                             }
                         }
                     }

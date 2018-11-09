@@ -14,3 +14,10 @@ E:\LuaEngine\LuaEngine\bin\Debug\LuaEngine.dll
 E:\LuaEngine\LuaEngine\bin\Debug\LuaEngine.pdb
 E:\LuaEngine\LuaEngine\obj\Debug\LuaEngine.dll
 E:\LuaEngine\LuaEngine\obj\Debug\LuaEngine.pdb
+G:\BattleSystem\bin\Debug\tolua.dll
+G:\BattleSystem\bin\Debug\LuaEngine.dll.config
+G:\BattleSystem\bin\Debug\LuaEngine.dll
+G:\BattleSystem\bin\Debug\LuaEngine.pdb
+G:\BattleSystem\LuaEngine\LuaEngine\obj\Debug\LuaEngine.csprojResolveAssemblyReference.cache
+G:\BattleSystem\LuaEngine\LuaEngine\obj\Debug\LuaEngine.dll
+G:\BattleSystem\LuaEngine\LuaEngine\obj\Debug\LuaEngine.pdb

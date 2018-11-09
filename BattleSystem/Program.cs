@@ -8,6 +8,7 @@ using BattleSystem.SkillModule;
 using System.Diagnostics;
 using LuaEngine;
 using System.Threading;
+using BattleSystem.Config;
 namespace BattleSystem
 {
     public class Program
@@ -23,8 +24,29 @@ namespace BattleSystem
             //Test3();
             //TestGetNearestAlly();
             //TestSelectSector();
-            TestSelectRect();
+            //TestSelectRect();
+            TestAI();
             Console.Read();
+        }
+        public static void TestAI()
+        {
+            Debug.InitLogger(new TestLogger());
+            ConfigManager.Init();
+            new BattleInterface();
+            BattleInterface.Instance.InitBattle(2);
+            var unit1 = BattleInterface.Instance.AddUnit(100001, 0, 1);
+            var unit2 = BattleInterface.Instance.AddUnit(100001, 1, 1);
+            unit1.position = new Vector3(0, 10);
+            unit2.position = new Vector3(0, 12);
+            float deltaTime = 0.05f;
+            while (true)
+            {
+                Thread.Sleep(50);
+                BattleInterface.Instance.Update(deltaTime);
+                LuaInterface.Update(deltaTime);
+                LuaInterface.FixedUpdate(deltaTime);
+                LuaInterface.LateUpdate();
+            }
         }
         public static void TestLuaEngine()
         {
@@ -94,7 +116,7 @@ namespace BattleSystem
         static void TestSkill()
         {
             Debug.InitLogger(new TestLogger());
-            Skill skill = new Skill(null,0, 0, 1);
+            SkillModule.Skill skill = new SkillModule.Skill(null, 0, 1);
             skill.Cast();
             while (true)
             {

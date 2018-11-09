@@ -35,7 +35,7 @@ namespace BattleSystem.SkillModule
         public override bool Execute(float dt)
         {
             mElapseTime += dt;
-            Debug.Log("Execute WaitSecondsAction");
+            //Debug.Log("Execute WaitSecondsAction");
             return mElapseTime >= mDuration;
         }
         public override void Reset()
@@ -67,7 +67,7 @@ namespace BattleSystem.SkillModule
         {
             while (mIndex < mActions.Length)
             {
-                Debug.Log("Execute SequenceAction " + mIndex);
+                //Debug.Log("Execute SequenceAction " + mIndex);
                 if (mActions[mIndex].Execute(dt))
                 {
                     mIndex++;
@@ -120,7 +120,7 @@ namespace BattleSystem.SkillModule
         }
         public override bool Execute(float dt)
         {
-            Debug.Log("Execute ParallelAction");
+            //Debug.Log("Execute ParallelAction");
             for (int i = mList.Count - 1; i >= 0; --i)
             {
                 if (mList[i].Execute(dt))
@@ -274,7 +274,8 @@ namespace BattleSystem.SkillModule
         }
         public override bool Execute(float dt)
         {
-            mSkill.target.AddBuff(templateID, mSkill.Owner);
+            if (mSkill.target != null)
+                mSkill.target.AddBuff(templateID, mSkill.Owner);
             return true;
         }
 
@@ -316,12 +317,16 @@ namespace BattleSystem.SkillModule
                 }
                 else
                 {
+                    if (mSkill.target == null)
+                        return true;
                     x = mSkill.target.position.x;
                     y = mSkill.target.position.y;
                 }
             }
             else
             {
+                    if (mSkill.target == null)
+                        return true;
                 x = mSkill.target.position.x;
                 y = mSkill.target.position.y;
             }
@@ -365,6 +370,11 @@ namespace BattleSystem.SkillModule
             act.height = height;
             act.theta = theta;
             act.mSkill =skill;
+            act.emitters = new List<BuffEmitter>();
+            for (int i = 0; i < emitters.Count;++i)
+            {
+                act.emitters.Add(emitters[i].Copy());
+            }
             return act;
         }
     }

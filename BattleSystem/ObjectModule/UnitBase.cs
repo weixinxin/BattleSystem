@@ -1,4 +1,5 @@
-﻿using BattleSystem.Config;
+﻿using BattleSystem.BehaviorTree;
+using BattleSystem.Config;
 using BattleSystem.SkillModule;
 using BattleSystem.SpaceModule;
 using System;
@@ -314,6 +315,8 @@ namespace BattleSystem.ObjectModule
                 mSkills[i] = new SkillModule.Skill(this, config.Skills[i], level);
             }
             InitController();
+            InitBehaviorTree();
+            
         }
         /// <summary>
         /// 单位受到治疗
@@ -404,6 +407,8 @@ namespace BattleSystem.ObjectModule
                 }
 
             }
+            if (BehaviorTree != null)
+                BehaviorTree.Exec();
             return mDestroyCountdown <= 0;
         }
 
@@ -445,10 +450,15 @@ namespace BattleSystem.ObjectModule
         }
 
         public UnitController Controller { get; protected set; }
+        public BehaviorTreeBase BehaviorTree { get; protected set; }
 
         public virtual void InitController()
         {
             Controller = new UnitController(this);
+        }
+        public virtual void InitBehaviorTree()
+        {
+            BehaviorTree = new BehaviorTreeUnit(this);
         }
     }
 }

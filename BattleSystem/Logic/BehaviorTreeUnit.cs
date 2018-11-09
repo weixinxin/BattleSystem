@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace BattleSystem.BehaviorTree
 {
-    class BehaviorTreeUnit : BehaviorTreeBase
+    public class BehaviorTreeUnit : BehaviorTreeBase
     {
         public UnitController m_Controller { get; private set; }
 

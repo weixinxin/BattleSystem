@@ -1,7 +1,7 @@
-G:\BattleSystem\bin\Release\BattleSystem.pdb
-G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.pdb
-G:\BattleSystem\bin\Release\tolua.dll
 G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.csprojResolveAssemblyReference.cache
 G:\BattleSystem\bin\Release\BattleSystem.exe.config
+G:\BattleSystem\bin\Release\tolua.dll
 G:\BattleSystem\bin\Release\BattleSystem.exe
+G:\BattleSystem\bin\Release\BattleSystem.pdb
 G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.exe
+G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.pdb

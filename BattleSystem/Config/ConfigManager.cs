@@ -21,6 +21,7 @@ namespace BattleSystem.Config
         {
             if (mInited)
                 return true;
+            Debug.Log("ConfigManager start init ...");
             Bullet = GetXMLConfig <Bullet>("config/bullet.xml");
             BuffEmitter = GetXMLConfig<BuffEmitter>("config/buffemitter.xml");
             Unit = GetXMLConfig<Unit>("config/unit.xml");
@@ -29,6 +30,7 @@ namespace BattleSystem.Config
             Skill = GetXMLConfig<Skill>("config/skill.xml");
             
             mInited = true;
+            Debug.Log("ConfigManager init succeed ！");
             return true;
         }
         private static T GetXMLConfig<T>(string path)
@@ -41,7 +43,7 @@ namespace BattleSystem.Config
             }
             catch (Exception e)
             {
-                Debug.LogErrorFormat("failed to load xml {0}",path);
+                Debug.LogErrorFormat("failed to load xml {0}\n{1}",path,e.ToString());
                 return default(T);
             }
         }

@@ -103,6 +103,7 @@ namespace BattleSystem.SkillModule
 
             action.duration = float.Parse(node.GetAttribute("duration"));
             action.interval = float.Parse(node.GetAttribute("interval"));
+            action.emitters = new List<BuffEmitter>();
             bool initRegion = false;
             for (int i = 0; i < node.ChildNodes.Count; ++i)
             {
@@ -130,9 +131,10 @@ namespace BattleSystem.SkillModule
                         BuffEmitter emitter = new BuffEmitter();
                         emitter.filter = (AoeFilter)Enum.Parse(typeof(AoeFilter), child.GetAttribute("filter"));
                         string[] buffs = child.GetAttribute("buffs").Split('|');
+                        emitter.buffs = new int[buffs.Length];
                         for (int n = 0; n < buffs.Length;++n)
                         {
-                            emitter.buffs.Add(int.Parse(buffs[n]));
+                            emitter.buffs[n] = int.Parse(buffs[n]);
                         }
                         action.emitters.Add(emitter);
                         break;

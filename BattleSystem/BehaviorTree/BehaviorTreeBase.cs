@@ -24,7 +24,7 @@ namespace BattleSystem.BehaviorTree
             m_BehaviorTreeExecutor = new BehaviorTreeExecutor(this);
         }
 
-        public override float GameTime
+        public virtual float GameTime
         {
             get
             {
@@ -38,10 +38,6 @@ namespace BattleSystem.BehaviorTree
             set { m_BehaviorTreeExecutor.TickDuration = value; }
         }
 
-        public virtual float GameTime
-        {
-            get { return 0; }
-        }
 
         public System.Random RandomMgr
         {

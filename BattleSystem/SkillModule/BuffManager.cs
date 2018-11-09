@@ -52,6 +52,10 @@ namespace BattleSystem.SkillModule
         /// <returns>是否进入死亡</returns>
         public static bool OnUnitWillDie(UnitBase unit, UnitBase slayer)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnUnitWillDie unit = {0} slayer = {1} ", unit.ID, slayer.ID);
+#endif
             bool res = true;
             for (int i = mUnitWillDieList.Count - 1; i >= 0; --i)
             {
@@ -94,6 +98,10 @@ namespace BattleSystem.SkillModule
         /// <param name="slayer">攻击者</param>
         public static void OnUnitBeSlayed(UnitBase unit, UnitBase slayer)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnUnitBeSlayed unit = {0} slayer = {1} ", unit.ID, slayer.ID);
+#endif
             for (int i = mUnitBeSlayedList.Count - 1; i >= 0; --i)
             {
                 mUnitBeSlayedList[i].OnUnitBeSlayed(unit, slayer);
@@ -131,6 +139,10 @@ namespace BattleSystem.SkillModule
         /// <param name="summoner">召唤者</param>
         public static void OnUnitBeSummoned(UnitBase unit, UnitBase summoner)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnUnitBeSummoned unit = {0} summoner = {1} ", unit.ID, summoner.ID);
+#endif
             for (int i = mUnitBeSummonedList.Count - 1; i >= 0; --i)
             {
                 mUnitBeSummonedList[i].OnUnitBeSummoned(unit, summoner);
@@ -172,6 +184,10 @@ namespace BattleSystem.SkillModule
         /// <returns>修正值</returns>
         public static int OnUnitWillHurt(UnitBase injured, UnitBase assailant, int value, DamageType dt, bool isAttack)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnUnitWillHurt injured = {0} assailant = {1} value = {2} dt ={3} isAttack = {4}", injured.ID, assailant.ID,value,dt,isAttack);
+#endif
             int offset = 0;
             for (int i = mUnitWillHurtList.Count - 1; i >= 0; --i)
             {
@@ -215,6 +231,10 @@ namespace BattleSystem.SkillModule
         /// <param name="isAttack">是否来自普通攻击</param>
         public static void OnUnitBeHurted(UnitBase injured, UnitBase assailant, int value, DamageType dt, bool isAttack)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnUnitBeHurted injured = {0} assailant = {1} value = {2} dt ={3} isAttack = {4}", injured.ID, assailant.ID, value, dt, isAttack);
+#endif
             for (int i = mUnitBeHurtedList.Count - 1; i >= 0; --i)
             {
                 mUnitBeHurtedList[i].OnUnitBeHurted(injured, assailant, value, dt, isAttack);
@@ -254,6 +274,10 @@ namespace BattleSystem.SkillModule
         /// <returns>修正值</returns>
         public static int OnUnitWillHeal(UnitBase injured, UnitBase healer, int value)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnUnitBeHurted injured = {0} healer = {1} value = {2}", injured.ID, healer.ID, value);
+#endif
             int offset = 0;
             for (int i = mUnitWillHealList.Count - 1; i >= 0; --i)
             {
@@ -294,6 +318,9 @@ namespace BattleSystem.SkillModule
         /// <param name="value">治疗值</param>
         public static void OnUnitBeHealed(UnitBase injured, UnitBase healer, int value)
         {
+#if DEBUG
+            Debug.LogFormat("OnUnitBeHealed injured = {0} healer = {1} value = {2}",injured.ID,healer.ID,value);
+#endif
             for (int i = mUnitBeHealedList.Count - 1; i >= 0; --i)
             {
                 mUnitBeHealedList[i].OnUnitBeHealed(injured, healer, value);
@@ -332,6 +359,10 @@ namespace BattleSystem.SkillModule
         /// <param name="skill">技能</param>
         public static void OnUnitCastSpell(UnitBase unit, Skill skill)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnUnitCastSpell unit = {0} skill = {1} ", unit.ID, skill.TemplateID);
+#endif
             for (int i = mUnitCastSpellList.Count - 1; i >= 0; --i)
             {
                 mUnitCastSpellList[i].OnUnitCastSpell(unit, skill);
@@ -371,6 +402,10 @@ namespace BattleSystem.SkillModule
         /// <param name="skill">技能</param>
         public static void OnSpellHit(UnitBase unit, UnitBase caster, Skill skill, bool killed)
         {
+
+#if DEBUG
+            Debug.LogFormat("OnSpellHit unit = {0} caster = {1} skill = {2} killed = {3}", unit.ID,caster.ID, skill.TemplateID,killed);
+#endif
             for (int i = mSpellHitList.Count - 1; i >= 0; --i)
             {
                 mSpellHitList[i].OnSpellHit(unit, caster, skill, killed);

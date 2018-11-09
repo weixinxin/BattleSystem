@@ -54,17 +54,18 @@ namespace BattleSystem
 
         public void Update(float dt)
         {
+            deltaTime = dt;
             GameTimeElapsed += dt;
             for (int i = mAoeFields.Count - 1; i >= 0; i--)
             {
-                if(mAoeFields[i].Update(dt))
+                if (mAoeFields[i].Update(deltaTime))
                 {
                     mAoeFields.RemoveAt(i);
                 }
             }
             for(int i = mUnits.Count - 1;i >=0;i--)
             {
-                if(mUnits[i].Update(dt))
+                if (mUnits[i].Update(deltaTime))
                 {
                     mClampGroup[mUnits[i].CampID].Remove(mUnits[i]);
                     mUnits.RemoveAt(i);
@@ -73,13 +74,14 @@ namespace BattleSystem
             for (int i = mBullets.Count - 1; i >= 0; i--)
             {
 
-                if (mBullets[i].Update(dt))
+                if (mBullets[i].Update(deltaTime))
                 {
                     mBullets.RemoveAt(i);
                 }
             }
         }
         public float GameTimeElapsed { get; private set; }
+        public float deltaTime { get; private set; }
         public UnitBase AddUnit(int templateID, int campID, int level)
         {
             UnitBase unit = new UnitBase(world,templateID, campID, level);
@@ -171,9 +173,10 @@ namespace BattleSystem
                 {
                     var emitter = new SkillModule.BuffEmitter();
                     var emitter_config = ConfigManager.BuffEmitter.getRow(config.BuffEmitter[i]);
+                    emitter.buffs = new int[emitter_config.Buffs.Length];
                     for(int n = 0; n < emitter_config.Buffs.Length;++n)
                     {
-                        emitter.buffs.Add(emitter_config.Buffs[n]);
+                        emitter.buffs[n] =emitter_config.Buffs[n];
                     }
                     emitter.Caster =shooter;
                     emitter.filter = emitter_config.AoeFilter;

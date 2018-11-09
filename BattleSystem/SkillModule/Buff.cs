@@ -6,16 +6,6 @@ using System;
 using BattleSystem.Config;
 namespace BattleSystem.SkillModule
 {
-    /// <summary>
-    /// 相同buff的叠加策略
-    /// </summary>
-    public enum OverlayTactics
-    {
-        kCoexist = 0,//多个共存
-        kSingleton = 1,//不允许叠加
-        kReplace = 2,//以新代旧
-        kAddTime = 3,//增加持续时间
-    }
 
     /// <summary>
     /// 附加状态
@@ -234,17 +224,17 @@ namespace BattleSystem.SkillModule
             {
                 switch (OverlayTactics)
                 {
-                    case SkillModule.OverlayTactics.kAddTime:
+                    case OverlayTactics.kAddTime:
                         if (!isLoop)
                         {
                             Duration += mCfgDuration;
                         }
                         return true;
-                    case SkillModule.OverlayTactics.kSingleton:
+                    case OverlayTactics.kSingleton:
                         return true;
-                    case SkillModule.OverlayTactics.kCoexist:
+                    case OverlayTactics.kCoexist:
                         return false;
-                    case SkillModule.OverlayTactics.kReplace:
+                    case OverlayTactics.kReplace:
                         mRecycle = true;
                         return false;
 
