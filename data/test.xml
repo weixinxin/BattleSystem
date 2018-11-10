@@ -6,15 +6,15 @@
 		</ParallelAction>
 		<WaitSecondsAction time ="1"/>
 		<SelectTargetAction filter = "kNearestEnemy" range = "kCirclefield" radius = "1.0" />
-		<AddBuffAction buff = "1" />
+		<AddBuffAction buff = "400001" />
 		<AoeFieldAction duration = "1.0" interval = "0.1" >
 			<CircleRegion radius = "1.0"/>
 			<RectRegion width = "1.0" height = "1.0"/>
 			<SectorRegion radius = "1.0" theta = "1.0"/>
-			<BuffEmitter filter = "kAll" buffs = "1|2|3">
+			<BuffEmitter filter = "kAll" buffs = "400001|400002"/>
 		</AoeFieldAction>
 		<PlayAnimationAction name = "idle" duration = "0" />
-		<PlayEffectAction name "effect001"/>
-		<PlaySoundAction name "effect001"/>
+		<PlayEffectAction name= "effect001"/>
+		<PlaySoundAction name= "effect001"/>
 	</SequenceAction>
 </Skill>
