@@ -5,7 +5,7 @@
 			<WaitSecondsAction time ="2"/>
 		</ParallelAction>
 		<WaitSecondsAction time ="1"/>
-		<SelectTargetAction filter = "kNearestEnemy" range = "kCirclefield" radius = "1.0" />
+		<SelectTargetAction filter = "kNearestEnemy" range = "kCirclefield" radius = "2.0" />
 		<AddBuffAction buff = "400001" />
 		<AoeFieldAction duration = "1.0" interval = "0.1" >
 			<CircleRegion radius = "1.0"/>
