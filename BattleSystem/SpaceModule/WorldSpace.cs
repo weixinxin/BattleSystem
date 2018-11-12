@@ -75,6 +75,17 @@ namespace BattleSystem.SpaceModule
         }
 
         /// <summary>
+        /// 单位死亡
+        /// </summary>
+        /// <param name="obj"></param>
+        public void RemoveUnit(UnitBase obj)
+        {
+            if (obj.mGridNode != null)
+            {
+                obj.mGridNode.Remove(obj);
+            }
+        }
+        /// <summary>
         /// 通过坐标获取所属格子
         /// </summary>
         /// <param name="x"></param>

@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 namespace BattleSystem.Config
 {
     [XmlRoot("root")]
-    public class Bullet
+    public class bullet
     {
 
         public class Row
@@ -80,7 +80,7 @@ namespace BattleSystem.Config
 
         [XmlElement("Bullet")]
         public Row[] Rows;
-        public Bullet.Row getRow(int key)
+        public bullet.Row getRow(int key)
         {
             for (int i = 0; i < Rows.Length; ++i)
             {

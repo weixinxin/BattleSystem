@@ -7,7 +7,7 @@ using System.Xml.Serialization;
 namespace BattleSystem.Config
 {
     [XmlRoot("root")]
-    public class Skill
+    public class skill
     {
         public class Row
         {
@@ -50,7 +50,7 @@ namespace BattleSystem.Config
 
         [XmlElement("Skill")]
         public Row[] Rows;
-        public Skill.Row getRow(int key)
+        public skill.Row getRow(int key)
         {
             for (int i = 0; i < Rows.Length; ++i)
             {

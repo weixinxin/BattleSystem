@@ -14,6 +14,12 @@ namespace BattleSystem.ObjectModule
     }
     public class UnitController
     {
+        public const string AniStateIdle = "Idle";
+        public const string AniStateWalking = "Move";
+        public const string AniStateDie = "Dead";
+        public const string AniStateAttack = "Attack";
+        public const string AniStateSkill = "Skill";
+        public const string AniStateFear = "Fear";
         public UnitBase Unit { get; protected set; }
 
         public UnitController() { }
@@ -21,7 +27,7 @@ namespace BattleSystem.ObjectModule
         TrackMovement mTrackMovement;
         NormalMovement mNormalMovement;
         UnitState mState = 0;
-        const float IdleDuration = 0.1f;
+        const float IdleDuration = 0.2f;
 
         private float mIdleTime = 0;
 
@@ -36,10 +42,6 @@ namespace BattleSystem.ObjectModule
             EnterIdle();
         }
 
-        protected float getAnimationDuration(string name)
-        {
-            return 1;
-        }
         public UnitBase TargetUnit { get; protected set; }
 
         public virtual void GetWithinAttackDistance(UnitBase target)
@@ -58,24 +60,46 @@ namespace BattleSystem.ObjectModule
                 return BehaviorResult.success;
         }
 
+        private bool mAttackOver = false;
         internal void EnterAttack()
         {
             if (mState != UnitState.kAttack)
             {
                 mState = UnitState.kAttack;
-                //开始攻击逻辑
+                mAttackOver = false;
+                //开始攻击逻辑   
+                PlayAnimation(AniStateAttack, delegate(string @event)
+                {
+                    if (@event == "attack")
+                    {
+                        if(Unit.Bullet > 0)
+                        {
+                            BattleInterface.Instance.ShootBullet(Unit.Bullet, Unit, Unit.AttackTarget, true);
+#if DEBUG
+                            Debug.LogFormat("unit {0} shoot unit {1} bullet = {2}",Unit.ID,Unit.AttackTarget.ID,Unit.Bullet);
+#endif
+                        }
+                        else
+                        {
+                            Unit.AttackTarget.LostHP((int)Unit.ATK.value, Unit, DamageType.kPhysical, true);
+                        }
+                    }
+                    else if (@event == "end" || @event == "abort")
+                    {
+                        mAttackOver = true;
+                    }
+                });
 #if DEBUG
                 Debug.Log(Unit.ID + " Attack");
-
 #endif
             }
-            mAttackDuration = getAnimationDuration("Attack") + BattleInterface.Instance.GameTimeElapsed;
+            mAttackDuration = Unit.Animator.getAnimationDurration(AniStateAttack) + BattleInterface.Instance.GameTimeElapsed;
             mAttackCoolDwon = Unit.AttackDuration.value + BattleInterface.Instance.GameTimeElapsed;
         }
 
         internal BehaviorResult Attack()
         {
-            if (BattleInterface.Instance.GameTimeElapsed < mAttackDuration)
+            if (BattleInterface.Instance.GameTimeElapsed < mAttackDuration && !mAttackOver)
                 return BehaviorResult.running;
             else
                 return BehaviorResult.success;
@@ -95,7 +119,7 @@ namespace BattleSystem.ObjectModule
             mState = UnitState.kMove;
             mTrackMovement.Retarget(Unit.AttackTarget);
 #if DEBUG
-                Debug.Log(Unit.ID + " ApproachToAttackTarget");
+                Debug.LogFormat("{0} ApproachToAttackTarget {1} start position = {2}",Unit.ID,Unit.AttackTarget.ID,Unit.position);
 #endif
         }
 
@@ -112,7 +136,7 @@ namespace BattleSystem.ObjectModule
         {
 
 #if DEBUG
-            Debug.Log(Unit.ID + " ExitApproachToAttackTarget");
+            Debug.LogFormat("{0} ExitApproachToAttackTarget position = {1}", Unit.ID,Unit.position);
 #endif
         }
         internal BehaviorResult SearchEnemy()
@@ -168,6 +192,24 @@ namespace BattleSystem.ObjectModule
             else
                 return BehaviorResult.success;
         }
-
+        protected void PlayAnimation(string animation, AnimatorController.AnimationEvent animationEvent)
+        {
+            if (Unit.Animator == null)
+            {
+                return;
+            }
+            Unit.Animator.PlayAnimation(animation);
+            if (animation == AniStateAttack)
+            {
+                float speed = Math.Max(Unit.Animator.getAnimationDurration(AniStateAttack) / Unit.AttackDuration.value,1.0f);
+                Unit.Animator.speed = speed;
+            }
+            else
+            {
+                Unit.Animator.speed = 1.0f;
+            }
+            Unit.Animator.OnAnimationEvent = animationEvent;
+            
+        }
     }
 }

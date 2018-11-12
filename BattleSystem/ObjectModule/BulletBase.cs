@@ -69,21 +69,7 @@ namespace BattleSystem.ObjectModule
         public abstract bool Update(float dt);
 
         public bool isAttack { get; protected set; }
-        /// <summary>
-        /// 更新坐标
-        /// </summary>
-        /// <param name="x"></param>
-        /// <param name="y"></param>
-        /// <param name="z"></param>
-        public virtual void UpdatePosition(float x, float y, float z)
-        {
-            if (float.IsNaN(x) || float.IsNaN(y) || float.IsNaN(z) || float.IsInfinity(x) || float.IsInfinity(y) || float.IsInfinity(z))
-            {
-                Debug.LogErrorFormat("error: {0},{1},{2}", x, y, z);
-                return;
-            }
-            position = new Vector3(x, y, z);
-        }
+       
 
 
         protected int[] buffs = null;

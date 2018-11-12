@@ -37,11 +37,13 @@ namespace BattleSystem
             var unit1 = BattleInterface.Instance.AddUnit(100001, 0, 1);
             var unit2 = BattleInterface.Instance.AddUnit(100001, 1, 1);
             unit1.position = new Vector3(0, 10);
-            unit2.position = new Vector3(0, 12);
+            unit2.position = new Vector3(0, 18);
             float deltaTime = 0.05f;
+            int tick = 0;
             while (true)
             {
                 Thread.Sleep(50);
+                Debug.Log("tick " + tick++);
                 BattleInterface.Instance.Update(deltaTime);
                 LuaInterface.Update(deltaTime);
                 LuaInterface.FixedUpdate(deltaTime);

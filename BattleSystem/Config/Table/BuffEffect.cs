@@ -8,7 +8,7 @@ using System.Xml.Serialization;
 namespace BattleSystem.Config
 {
     [XmlRoot("root")]
-    public class BuffEffect
+    public class buffEffect
     {
         public class Row
         {
@@ -40,7 +40,7 @@ namespace BattleSystem.Config
         }
         [XmlElement("BuffEffect")]
         public Row[] Rows;
-        public BuffEffect.Row getRow(int key)
+        public buffEffect.Row getRow(int key)
         {
             for (int i = 0; i < Rows.Length; ++i)
             {

@@ -4,7 +4,7 @@ using System.Xml.Serialization;
 namespace BattleSystem.Config
 {
     [XmlRoot("root")]
-    public class BuffEmitter
+    public class buffEmitter
     {
 
         public class Row
@@ -34,7 +34,7 @@ namespace BattleSystem.Config
 
         [XmlElement("BuffEmitter")]
         public Row[] Rows;
-        public BuffEmitter.Row getRow(int key)
+        public buffEmitter.Row getRow(int key)
         {
             for (int i = 0; i < Rows.Length; ++i)
             {

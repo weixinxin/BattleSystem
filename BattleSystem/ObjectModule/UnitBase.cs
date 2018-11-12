@@ -17,6 +17,8 @@ namespace BattleSystem.ObjectModule
         internal GridNode mGridNode = null;
 
         private SkillModule.Skill[] mSkills = null;
+
+        public AnimatorController Animator { get; private set; }
         /// <summary>
         /// 唯一标识符
         /// </summary>
@@ -47,7 +49,8 @@ namespace BattleSystem.ObjectModule
                 }
 #endif
                 _position = value;
-                mWorldSpace.UpdateNode(this);
+                if(!IsDead)
+                    mWorldSpace.UpdateNode(this);
             }
         }
         private Vector3 _position = Vector3.zero;
@@ -97,7 +100,6 @@ namespace BattleSystem.ObjectModule
         /// 攻击距离
         /// </summary>
         public DistanceAttribute AttackRange { get; set; }
-
         /// <summary>
         /// 视野
         /// </summary>
@@ -109,6 +111,11 @@ namespace BattleSystem.ObjectModule
         public int CampID { get; set; }
 
         public UnitBase AttackTarget { get; set; }
+
+        /// <summary>
+        /// 子弹ID
+        /// </summary>
+        public int Bullet { get;private set; }
 
         private int mAttackMissCount = 0;
         private int mMagicDamageImmunityCount = 0;
@@ -309,14 +316,18 @@ namespace BattleSystem.ObjectModule
             AttackDuration = new AttackDuration(config.AttackDuration, null);
             AttackRange = new DistanceAttribute(config.AttackRange, null);
             VisualRange = new DistanceAttribute(config.VisualRange, null);
-            mSkills = new SkillModule.Skill[config.Skills.Length];
+            Bullet = config.Bullet;
+            if (config.Skills != null)
+                mSkills = new Skill[config.Skills.Length];
+            else
+                mSkills = new Skill[0];
             for (int i = 0; i < mSkills.Length; ++i)
             {
-                mSkills[i] = new SkillModule.Skill(this, config.Skills[i], level);
+                mSkills[i] = new Skill(this, config.Skills[i], level);
             }
             InitController();
             InitBehaviorTree();
-            
+            Animator = new AnimatorController(config.Animator);
         }
         /// <summary>
         /// 单位受到治疗
@@ -346,6 +357,8 @@ namespace BattleSystem.ObjectModule
         public void LostHP(int delta, UnitBase assailant, DamageType dt, bool isAttack)
         {
             if (IsDead) return;
+            if (dt == DamageType.kMagic && isMagicDamageImmunity || dt == DamageType.kPhysical && isPhysicalDamageImmunity)
+                return;
             var offset = BuffManager.OnUnitWillHurt(this, assailant, delta, dt, isAttack);
             delta += offset;
             if (delta > 0)
@@ -376,6 +389,8 @@ namespace BattleSystem.ObjectModule
         public virtual void OnDead()
         {
             IsDead = true;
+            BattleInterface.Instance.OnUnitDie(this);
+            BehaviorTree.Stop();
             mDestroyCountdown = 5.0f;
         }
 
@@ -407,8 +422,10 @@ namespace BattleSystem.ObjectModule
                 }
 
             }
-            if (BehaviorTree != null)
+            if (BehaviorTree != null && !IsDead)
                 BehaviorTree.Exec();
+            if (Animator != null)
+                Animator.Update(dt);
             return mDestroyCountdown <= 0;
         }
 

@@ -51,14 +51,16 @@ namespace BattleSystem.BehaviorTree
         protected virtual void Start()
         {
             Root.TargetNode = new BehaviorSelectorLoop()
-                .Add(new BehaviorWithPreconditonNode() 
+                .Add(
+                    new BehaviorWithPreconditonNode() 
                     { 
                         OnPrecondition = delegate() 
                         { 
                             return true; 
                         }
                     }
-                    .setActionNode(new BehaviorLoopNode()
+                    .setActionNode(
+                    new BehaviorLoopNode()
                         .setTargetNode(new BehaviorSelectorNode()
                             .Add(new BehaviorSequenceNode() 
                                 { 

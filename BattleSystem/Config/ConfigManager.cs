@@ -9,25 +9,26 @@ namespace BattleSystem.Config
     {
 
         private static bool mInited = false;
-
-        public static Bullet Bullet = null;
-        public static BuffEmitter BuffEmitter = null;
-        public static Unit Unit = null;
-        public static Buff Buff = null;
-        public static BuffEffect BuffEffect = null;
-        public static Skill Skill = null;
+        public static Animators Animator = null;
+        public static bullet Bullet = null;
+        public static buffEmitter BuffEmitter = null;
+        public static unit Unit = null;
+        public static buff Buff = null;
+        public static buffEffect BuffEffect = null;
+        public static skill Skill = null;
         
         public static bool Init()
         {
             if (mInited)
                 return true;
             Debug.Log("ConfigManager start init ...");
-            Bullet = GetXMLConfig <Bullet>("config/bullet.xml");
-            BuffEmitter = GetXMLConfig<BuffEmitter>("config/buffemitter.xml");
-            Unit = GetXMLConfig<Unit>("config/unit.xml");
-            Buff = GetXMLConfig<Buff>("config/buff.xml");
-            BuffEffect = GetXMLConfig<BuffEffect>("config/buffeffect.xml");
-            Skill = GetXMLConfig<Skill>("config/skill.xml");
+            Animator = GetXMLConfig<Animators>("config/animator.xml");
+            Bullet = GetXMLConfig <bullet>("config/bullet.xml");
+            BuffEmitter = GetXMLConfig<buffEmitter>("config/buffemitter.xml");
+            Unit = GetXMLConfig<unit>("config/unit.xml");
+            Buff = GetXMLConfig<buff>("config/buff.xml");
+            BuffEffect = GetXMLConfig<buffEffect>("config/buffeffect.xml");
+            Skill = GetXMLConfig<skill>("config/skill.xml");
             
             mInited = true;
             Debug.Log("ConfigManager init succeed ！");

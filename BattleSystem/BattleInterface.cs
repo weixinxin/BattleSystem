@@ -96,7 +96,11 @@ namespace BattleSystem
             if (!mClampGroup[unit.CampID].Contains(unit))
                 mClampGroup[unit.CampID].Add(unit);
         }
-
+        public void OnUnitDie(UnitBase unit)
+        {
+            mClampGroup[unit.CampID].Remove(unit);
+            world.RemoveUnit(unit);
+        }
         public void AddAoeField(AoeField aoe)
         {
             mAoeFields.Add(aoe);
@@ -185,7 +189,7 @@ namespace BattleSystem
                 }
                 bullet.InitAoeFile(config.AoeRadius, config.AoeDuration, config.AoeInterval, emitters);
             }
-            if(config.Buffs.Length > 0)
+            if (config.Buffs!=null && config.Buffs.Length > 0)
             {
                 int[] buffs = new int[config.Buffs.Length];
                 for (int n = 0; n < config.Buffs.Length; ++n)
@@ -194,6 +198,7 @@ namespace BattleSystem
                 }
                 bullet.InitBuff(buffs);
             }
+            bullet.position = shooter.position;
             AddBullet(bullet);
             return bullet;
         }

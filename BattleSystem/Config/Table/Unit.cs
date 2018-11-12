@@ -8,7 +8,7 @@ namespace BattleSystem.Config
 {
 
     [XmlRoot("root")]
-    public class Unit
+    public class unit
     {
         public class Row
         {
@@ -41,7 +41,11 @@ namespace BattleSystem.Config
             [XmlAttribute("VisualRange")]
             public float VisualRange { get; set; }
 
-
+            [XmlAttribute("Animator")]
+            public int Animator { get; set; }
+            [XmlAttribute("Bullet")]
+            public int Bullet { get; set; }
+            
             [XmlAttribute("Skills")]
             public string _Skills { get; set; }
             private XMLValueArray<int> _Skills__;
@@ -61,7 +65,7 @@ namespace BattleSystem.Config
 
         [XmlElement("Unit")]
         public Row[] Rows;
-        public Unit.Row getRow(int key)
+        public unit.Row getRow(int key)
         {
             for (int i = 0; i < Rows.Length; ++i)
             {
