@@ -12,4 +12,3 @@ G:\BattleSystem\bin\Release\LuaEngine.dll
 G:\BattleSystem\bin\Release\LuaEngine.pdb
 G:\BattleSystem\LuaEngine\LuaEngine\obj\Release\LuaEngine.dll
 G:\BattleSystem\LuaEngine\LuaEngine\obj\Release\LuaEngine.pdb
-G:\BattleSystem\LuaEngine\LuaEngine\obj\Release\LuaEngine.csprojResolveAssemblyReference.cache

@@ -5,3 +5,5 @@ G:\BattleSystem\bin\Release\BattleSystem.exe
 G:\BattleSystem\bin\Release\BattleSystem.pdb
 G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.exe
 G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.pdb
+G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.Properties.Resources.resources
+G:\BattleSystem\BattleSystem\obj\Release\BattleSystem.csproj.GenerateResource.Cache
