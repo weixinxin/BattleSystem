@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <root>
-	<Unit ID="100001" Radius="0.5" MaxHP="10" Attack="1" MoveSpeed="1.0" AttackDuration="1.0" AttackRange="4" VisualRange="6.0" Bullet="200001" Skills="" Animator="1"/>
+	<Unit ID="100001" Radius="0.5" MaxHP="10" Attack="1" MoveSpeed="1.0" AttackDuration="1.0" AttackRange="4" VisualRange="6.0" Bullet="200001" Skills="300001" Animator="1"/>
+	<Unit ID="100002" Radius="0.5" MaxHP="10" Attack="1" MoveSpeed="1.0" AttackDuration="1.0" AttackRange="4" VisualRange="6.0" Bullet="200001" Skills="" Animator="1"/>
+	<Unit ID="100003" Radius="0.5" MaxHP="10" Attack="1" MoveSpeed="1.0" AttackDuration="1.0" AttackRange="4" VisualRange="6.0" Bullet="200001" Skills="300003" Animator="1"/>
+	<Unit ID="100004" Radius="0.5" MaxHP="10" Attack="1" MoveSpeed="1.0" AttackDuration="1.0" AttackRange="4" VisualRange="6.0" Bullet="200001" Skills="300004" Animator="1"/>
 </root>

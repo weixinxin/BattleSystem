@@ -35,19 +35,22 @@ namespace BattleSystem
             new BattleInterface();
             BattleInterface.Instance.InitBattle(2);
             var unit1 = BattleInterface.Instance.AddUnit(100001, 0, 1);
-            var unit2 = BattleInterface.Instance.AddUnit(100001, 1, 1);
-            unit1.position = new Vector3(0, 10);
-            unit2.position = new Vector3(0, 18);
+            var unit2 = BattleInterface.Instance.AddUnit(100002, 1, 1);
+            var unit3 = BattleInterface.Instance.AddUnit(100004, 1, 1);
+            unit1.position = new Vector3(0, 16);
+            unit2.position = new Vector3(-1, 16);
+            unit3.position = new Vector3(1, 16);
             float deltaTime = 0.05f;
-            int tick = 0;
             while (true)
             {
+                
                 Thread.Sleep(50);
-                Debug.Log("tick " + tick++);
                 BattleInterface.Instance.Update(deltaTime);
+                Debug.Log("time = " + BattleInterface.Instance.GameTimeElapsed);
                 LuaInterface.Update(deltaTime);
                 LuaInterface.FixedUpdate(deltaTime);
                 LuaInterface.LateUpdate();
+                Debug.Log("");
             }
         }
         public static void TestLuaEngine()

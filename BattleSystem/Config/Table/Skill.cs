@@ -21,26 +21,12 @@ namespace BattleSystem.Config
             public int Cost { get; set; }
 
             [XmlAttribute("CD")]
-            public float CD { get; set; }
-
-            [XmlAttribute("Paragraph")]
-            public int Paragraph { get; set; }
+            public float CD { get; set; }  
 
 
             [XmlAttribute("Duration")]
-            public string _Duration { get; set; }
-            private XMLValueArray<float> __Duration__;
-            public XMLValueArray<float> Duration
-            {
-                get
-                {
-                    if (__Duration__ == null)
-                    {
-                        __Duration__ = _Duration;
-                    }
-                    return __Duration__;
-                }
-            }
+            public float Duration { get; set; }
+
 
             [XmlAttribute("AutoCast")]
             public bool AutoCast { get; set; }

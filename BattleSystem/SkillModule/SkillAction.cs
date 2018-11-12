@@ -170,7 +170,6 @@ namespace BattleSystem.SkillModule
         }
         public void SelectTarget()
         {
-
             if (filter == TargetFilter.kSelf)
             {
                 mSkill.target = mSkill.Owner;
@@ -249,6 +248,10 @@ namespace BattleSystem.SkillModule
                 default:
                     break;
             }
+
+#if DEBUG
+            Debug.LogFormat("unit {0} skill {1} SelectTarget target = {2}", mSkill.Owner.ID, mSkill.TemplateID, (mSkill.target == null)?"null":mSkill.target.ID.ToString());
+#endif
         }
 
         public override SkillAction Copy(Skill skill)
@@ -275,7 +278,12 @@ namespace BattleSystem.SkillModule
         public override bool Execute(float dt)
         {
             if (mSkill.target != null)
+            {
+#if DEBUG
+                Debug.LogFormat("unit {0} skill {1} AddBuffAction to unit {2}", mSkill.Owner.ID, mSkill.TemplateID, mSkill.target.ID);
+#endif
                 mSkill.target.AddBuff(templateID, mSkill.Owner);
+            }
             return true;
         }
 
@@ -354,6 +362,10 @@ namespace BattleSystem.SkillModule
                     break;
             }
             AoeField aoe = new AoeField(mSkill.Owner, region, duration, interval, emitters);
+
+#if DEBUG
+            Debug.LogFormat("unit {0} skill {1} AddAoeField at {2},{3}", mSkill.Owner.ID, mSkill.TemplateID, x,y);
+#endif
             BattleInterface.Instance.AddAoeField(aoe);
             return true;
         }
@@ -401,6 +413,10 @@ namespace BattleSystem.SkillModule
             {
                 mExecuted = true;
                 //播放动画
+
+#if DEBUG
+                Debug.LogFormat("unit {0} skill {1} PlayAnimation {2}", mSkill.Owner.ID, mSkill.TemplateID, this.name);
+#endif
             }
             mElapseTime += dt;
             return mElapseTime >= mDuration;
@@ -432,6 +448,9 @@ namespace BattleSystem.SkillModule
         }
         public override bool Execute(float dt)
         {
+#if DEBUG
+            Debug.LogFormat("unit {0} skill {1} PlayEffectAction {2}", mSkill.Owner.ID, mSkill.TemplateID, this.name);
+#endif
             //播放特效
             return true;
         }
@@ -457,6 +476,9 @@ namespace BattleSystem.SkillModule
         }
         public override bool Execute(float dt)
         {
+#if DEBUG
+            Debug.LogFormat("unit {0} skill {1} PlaySoundAction {2}", mSkill.Owner.ID, mSkill.TemplateID, this.name);
+#endif
             //播放音效
             return true;
         }
@@ -483,7 +505,11 @@ namespace BattleSystem.SkillModule
 
         public override bool Execute(float dt)
         {
-            throw new NotImplementedException();
+#if DEBUG
+            Debug.LogFormat("unit {0} skill {1} ShootBulletAction {2}", mSkill.Owner.ID, mSkill.TemplateID, this.templateID);
+#endif
+            BattleInterface.Instance.ShootBullet(templateID, mSkill.Owner, mSkill.target, false);
+            return true;
         }
 
         public override SkillAction Copy(Skill skill)

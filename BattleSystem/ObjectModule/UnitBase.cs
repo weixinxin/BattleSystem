@@ -18,6 +18,8 @@ namespace BattleSystem.ObjectModule
 
         private SkillModule.Skill[] mSkills = null;
 
+
+
         public AnimatorController Animator { get; private set; }
         /// <summary>
         /// 唯一标识符
@@ -346,6 +348,9 @@ namespace BattleSystem.ObjectModule
                 if (HP > MaxHP) HP = MaxHP;
                 BuffManager.OnUnitBeHealed(this, healer, HP - origin);
             }
+#if DEBUG
+            Debug.LogFormat("unit {0} HP = {1}", ID, HP);
+#endif
         }
         /// <summary>
         /// 单位受到伤害
@@ -358,7 +363,25 @@ namespace BattleSystem.ObjectModule
         {
             if (IsDead) return;
             if (dt == DamageType.kMagic && isMagicDamageImmunity || dt == DamageType.kPhysical && isPhysicalDamageImmunity)
+            {
+
+#if DEBUG
+                if (isMagicDamageImmunity)
+                {
+                    Debug.LogFormat("unit {0} try hurt  unit {1} but unit{1} isMagicDamageImmunity",assailant.ID, ID);
+                }
+                else
+                {
+                    Debug.LogFormat("unit {0} try hurt  unit {1} but unit{1} isPhysicalDamageImmunity", assailant.ID, ID);
+                }
+                
+#endif
                 return;
+            }
+
+#if DEBUG
+            float cur_hp = HP;
+#endif
             var offset = BuffManager.OnUnitWillHurt(this, assailant, delta, dt, isAttack);
             delta += offset;
             if (delta > 0)
@@ -366,7 +389,7 @@ namespace BattleSystem.ObjectModule
                 var _delta = Shield.Consume(delta);
                 HP -= _delta;
                 BuffManager.OnUnitBeHurted(this, assailant, delta, dt, isAttack);
-                if (HP < 0)
+                if (HP <= 0)
                 {
                     if (isDeathless)
                     {
@@ -384,6 +407,10 @@ namespace BattleSystem.ObjectModule
                     }
                 }
             }
+
+#if DEBUG
+            Debug.LogFormat("unit {0} origHP = {1} HP = {2}", ID, cur_hp,HP);
+#endif
         }
 
         public virtual void OnDead()
@@ -392,6 +419,8 @@ namespace BattleSystem.ObjectModule
             BattleInterface.Instance.OnUnitDie(this);
             BehaviorTree.Stop();
             mDestroyCountdown = 5.0f;
+            Animator.Stop();
+            //播放死亡动画
         }
 
         /// <summary>
@@ -427,6 +456,25 @@ namespace BattleSystem.ObjectModule
             if (Animator != null)
                 Animator.Update(dt);
             return mDestroyCountdown <= 0;
+        }
+
+        private int mExpecteddamage = 0;
+        public void addExpectedDamage(int value)
+        {
+            mExpecteddamage += value;
+        }
+        public void removeExpectedDamage(int value)
+        {
+            mExpecteddamage -= value;
+            if (mExpecteddamage < 0)
+                Debug.LogException(new Exception("Expected damage should not less then zero!"));
+        }
+        public bool isDying
+        {
+            get
+            {
+                return HP - mExpecteddamage <= 0;
+            }
         }
 
         public float speed

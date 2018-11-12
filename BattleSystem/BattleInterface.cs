@@ -165,6 +165,7 @@ namespace BattleSystem
             if (isAttack)
             {
                 bullet.InitDamage((int)shooter.ATK.value, config.DamageType, isAttack);
+                
             }
             else if (config.Damage > 0)
             {

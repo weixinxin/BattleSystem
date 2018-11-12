@@ -52,21 +52,12 @@ namespace BattleSystem.SkillModule
         public float CD { get; private set; }
         protected float mCDTime = 0; 
 
-
-
-
-        /// <summary>
-        /// 几段技能
-        /// </summary>
-        public int Paragraph { get; private set; }
-
-        private int CurParagraph = 0;
-
         /// <summary>
         /// 技能持续时间
         /// </summary>
-        public float[] Duration { get; private set; }
-
+        public float Duration { get; private set; }
+        protected float mSkillElapseTime = 0;
+        protected bool mSkillActionsOver = false;
 
         /// <summary>
         /// 技能等级
@@ -99,13 +90,8 @@ namespace BattleSystem.SkillModule
             this.AutoCast = config.AutoCast;
             this.CD = config.CD;
             this.Cost = config.Cost;
-            this.Paragraph = config.Paragraph;
             this.Desc = config.Desc;
-            this.Duration = new float[config.Duration.Length];
-            for (int i = 0; i < config.Duration.Length;++i)
-            {
-                this.Duration[i] = config.Duration[i];
-            }
+            this.Duration = config.Duration;
             this.Level = level;
             //通过模板ID获取配置数据
             mAction = SkillManager.LoadSkillAction(templateID,this);
@@ -146,8 +132,13 @@ namespace BattleSystem.SkillModule
         {
             if(Status == SkillStatus.kReady)
             {
+#if DEBUG
+                Debug.LogFormat("unit {0} cast skill {1}",Owner.ID,TemplateID);
+#endif
                 mAction.Reset();
                 Status = SkillStatus.kRunning;
+                mSkillElapseTime = 0;
+                mSkillActionsOver = false;
             }
         }
 
@@ -160,6 +151,7 @@ namespace BattleSystem.SkillModule
             this.target = target;
             Cast();
         }
+
         /// <summary>
         /// 对坐标区域释放技能
         /// </summary>
@@ -179,11 +171,15 @@ namespace BattleSystem.SkillModule
         {
             if (Status == SkillStatus.kRunning)
             {
-                mCDTime = CD;
-                Status = SkillStatus.kCoolDown;
+                OnSkillOver();
             }
         }
+        public void OnSkillOver()
+        {
 
+            mCDTime = CD;
+            Status = SkillStatus.kCoolDown;
+        }
         public void Update(float dt)
         {
             switch(Status)
@@ -199,10 +195,24 @@ namespace BattleSystem.SkillModule
                     break;
                 case SkillStatus.kRunning:
                     {
-                        if(mAction.Execute(dt))
+                        mSkillElapseTime += dt;
+                        if (!mSkillActionsOver)
                         {
-                            mCDTime = CD;
-                            Status = SkillStatus.kCoolDown;
+
+                            if (mAction.Execute(dt))
+                            {
+                                mSkillActionsOver = true;
+                            }
+                        }
+                        else if (mSkillElapseTime >= Duration)
+                        {
+#if DEBUG
+                            if(mSkillElapseTime - Duration > dt && Duration > 0)
+                            {
+                                Debug.LogWarningFormat("Skill duration {0} is less than the action time", Duration);
+                            }
+#endif
+                            OnSkillOver();
                         }
                     }
                     break;

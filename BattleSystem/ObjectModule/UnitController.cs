@@ -72,16 +72,26 @@ namespace BattleSystem.ObjectModule
                 {
                     if (@event == "attack")
                     {
-                        if(Unit.Bullet > 0)
+                        if (Unit.AttackTarget.IsDead)
                         {
-                            BattleInterface.Instance.ShootBullet(Unit.Bullet, Unit, Unit.AttackTarget, true);
-#if DEBUG
-                            Debug.LogFormat("unit {0} shoot unit {1} bullet = {2}",Unit.ID,Unit.AttackTarget.ID,Unit.Bullet);
-#endif
+                            //攻击对象死亡，本次攻击无效，重置攻击CD
+                            mAttackOver = true;
+                            mAttackCoolDwon = 0;
                         }
                         else
                         {
-                            Unit.AttackTarget.LostHP((int)Unit.ATK.value, Unit, DamageType.kPhysical, true);
+
+                            if (Unit.Bullet > 0)
+                            {
+                                BattleInterface.Instance.ShootBullet(Unit.Bullet, Unit, Unit.AttackTarget, true);
+#if DEBUG
+                                Debug.LogFormat("unit {0} shoot unit {1} bullet = {2}", Unit.ID, Unit.AttackTarget.ID, Unit.Bullet);
+#endif
+                            }
+                            else
+                            {
+                                Unit.AttackTarget.LostHP((int)Unit.ATK.value, Unit, DamageType.kPhysical, true);
+                            }
                         }
                     }
                     else if (@event == "end" || @event == "abort")
@@ -146,7 +156,15 @@ namespace BattleSystem.ObjectModule
             Debug.Log(Unit.ID + " SearchEnemy");
 #endif
             List<UnitBase> set = new List<UnitBase>();
-            BattleInterface.Instance.world.SelectCircle(Unit.position.x, Unit.position.y, Unit.VisualRange.value, set, (obj) => obj.CampID != Unit.CampID);
+            if(Unit.Bullet > 0)
+            {
+
+                BattleInterface.Instance.world.SelectCircle(Unit.position.x, Unit.position.y, Unit.VisualRange.value, set, (obj) => !obj.isDying && obj.CampID != Unit.CampID);
+            }
+            else
+            {
+                BattleInterface.Instance.world.SelectCircle(Unit.position.x, Unit.position.y, Unit.VisualRange.value, set, (obj) => obj.CampID != Unit.CampID);
+            }
             float sqr_dis = 0;
             UnitBase unit = null;
             for (int i = 0; i < set.Count; ++i)

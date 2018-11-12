@@ -105,20 +105,12 @@ namespace BattleSystem.SkillModule
                     Owner.AddState(Type);
                     break;
                 case BuffEffectType.kPhysicalDamage:
-                    if (!Owner.isPhysicalDamageImmunity)
-                    {
-                        //扣血
-                        DoDamage(Owner,Caster, DamageType.kPhysical);
-                    }
+                    DoDamage(Owner, Caster, DamageType.kPhysical);
                     res = false;
                     break;
                 case BuffEffectType.kMagicDamage:
-                    if (!Owner.isMagicDamageImmunity)
-                    {
-                        //扣血
-                        DoDamage(Owner, Caster, DamageType.kMagic);
-                    }
-                        res = false;
+                    DoDamage(Owner, Caster, DamageType.kMagic);
+                    res = false;
                     break;
                 case BuffEffectType.kTrueDamage:
                     //直接扣血

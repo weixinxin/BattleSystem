@@ -18,6 +18,6 @@ G:\BattleSystem\bin\Debug\tolua.dll
 G:\BattleSystem\bin\Debug\LuaEngine.dll.config
 G:\BattleSystem\bin\Debug\LuaEngine.dll
 G:\BattleSystem\bin\Debug\LuaEngine.pdb
-G:\BattleSystem\LuaEngine\LuaEngine\obj\Debug\LuaEngine.csprojResolveAssemblyReference.cache
 G:\BattleSystem\LuaEngine\LuaEngine\obj\Debug\LuaEngine.dll
 G:\BattleSystem\LuaEngine\LuaEngine\obj\Debug\LuaEngine.pdb
+G:\BattleSystem\LuaEngine\LuaEngine\obj\Debug\LuaEngine.csprojResolveAssemblyReference.cache

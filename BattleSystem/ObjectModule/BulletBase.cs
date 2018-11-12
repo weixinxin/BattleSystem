@@ -97,7 +97,7 @@ namespace BattleSystem.ObjectModule
 
         protected int damage = 0;
         protected DamageType damageType;
-        public void InitDamage(int value, DamageType dt, bool isAttack)
+        public virtual void InitDamage(int value, DamageType dt, bool isAttack)
         {
             damage = value;
             damageType = dt;

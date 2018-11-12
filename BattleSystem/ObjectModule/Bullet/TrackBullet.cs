@@ -24,14 +24,27 @@ namespace BattleSystem.ObjectModule
             Movement.Retarget(target);
         }
 
-
+        public override void InitDamage(int value, DamageType dt, bool isAttack)
+        {
+            base.InitDamage(value, dt, isAttack);
+            if(isAttack)
+            {
+                Target.addExpectedDamage(damage);
+            }
+        }
         public override bool Update(float dt)
         {
             if(Movement.Update(dt))
             {
                 //普攻伤害
                 if (damage > 0)
+                {
+                    if (isAttack)
+                    {
+                        Target.removeExpectedDamage(damage);
+                    }
                     Target.LostHP(damage, Shooter, damageType, isAttack);
+                }
                 //给目标上buff
                 if (buffs != null)
                 {

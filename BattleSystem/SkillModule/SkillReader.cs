@@ -14,7 +14,7 @@ namespace BattleSystem.SkillModule
         {
             if(!LoadedList.ContainsKey(templateID))
             {
-                string xmlPath = "test.xml";
+                string xmlPath = string.Format("config/skillaction/{0}.xml",templateID);
                 //创建xml文档
                 XmlDocument xml = Utils.LoadXMLDocument(xmlPath);
                 if (xml == null)
