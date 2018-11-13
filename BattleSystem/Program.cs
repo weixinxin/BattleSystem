@@ -6,9 +6,9 @@ using BattleSystem.ObjectModule;
 using BattleSystem.SpaceModule;
 using BattleSystem.SkillModule;
 using System.Diagnostics;
-using LuaEngine;
 using System.Threading;
 using BattleSystem.Config;
+using LuaEngine;
 namespace BattleSystem
 {
     public class Program
@@ -30,11 +30,25 @@ namespace BattleSystem
         }
         public static void TestAI()
         {
+            var logger = new ToluaDemo.TestLogger();
+            InitConfig cfg = new InitConfig()
+            {
+                logger = logger,
+                luaDir = LuaConst.luaDir,
+                toluaDir = LuaConst.toluaDir,
+                osDir = LuaConst.osDir,
+                luaResDir = LuaConst.luaResDir,
+                zbsDir = LuaConst.zbsDir,
+                openToLuaLib = true,//LuaConst.openToLuaLib,
+                openLuaSocket = LuaConst.openLuaSocket,
+                openLuaDebugger = LuaConst.openLuaDebugger
+            };
+            LuaInterface.Init(cfg);
             Debug.InitLogger(new TestLogger());
             ConfigManager.Init();
             new BattleInterface();
             BattleInterface.Instance.InitBattle(2);
-            var unit1 = BattleInterface.Instance.AddUnit(100001, 0, 1);
+            var unit1 = BattleInterface.Instance.AddUnit(100005, 0, 1);
             var unit2 = BattleInterface.Instance.AddUnit(100002, 1, 1);
             var unit3 = BattleInterface.Instance.AddUnit(100004, 1, 1);
             unit1.position = new Vector3(0, 16);
@@ -47,7 +61,7 @@ namespace BattleSystem
                 Thread.Sleep(50);
                 BattleInterface.Instance.Update(deltaTime);
                 Debug.Log("time = " + BattleInterface.Instance.GameTimeElapsed);
-                LuaInterface.Update(deltaTime);
+                LuaEngine.LuaInterface.Update(deltaTime);
                 LuaInterface.FixedUpdate(deltaTime);
                 LuaInterface.LateUpdate();
                 Debug.Log("");

@@ -54,6 +54,10 @@
     <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="CString, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Plugins\CString.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -104,6 +108,75 @@
     <Compile Include="Config\Table\skill.cs" />
     <Compile Include="Config\Table\unit.cs" />
     <Compile Include="Logic\BehaviorTreeUnit.cs" />
+    <Compile Include="LuaEngine\Debug.cs" />
+    <Compile Include="LuaEngine\ExtensionMethods.cs" />
+    <Compile Include="LuaEngine\ILogger.cs" />
+    <Compile Include="LuaEngine\LuaInterface.cs" />
+    <Compile Include="LuaEngine\Source\Generate\BattleSystem_DamageTypeWrap.cs" />
+    <Compile Include="LuaEngine\Source\Generate\BattleSystem_ObjectModule_UnitBaseWrap.cs" />
+    <Compile Include="LuaEngine\Source\Generate\BattleSystem_SkillModule_SkillWrap.cs" />
+    <Compile Include="LuaEngine\Source\Generate\DelegateFactory.cs" />
+    <Compile Include="LuaEngine\Source\Generate\LuaBinder.cs" />
+    <Compile Include="LuaEngine\Source\Generate\LuaEngine_InjectTypeWrap.cs" />
+    <Compile Include="LuaEngine\Source\Generate\LuaEngine_LuaInjectionStationWrap.cs" />
+    <Compile Include="LuaEngine\Source\Generate\LuaEngine_LuaProfilerWrap.cs" />
+    <Compile Include="LuaEngine\Source\Generate\LuaProfilerWrap.cs" />
+    <Compile Include="LuaEngine\Source\LuaConst.cs" />
+    <Compile Include="LuaEngine\StringBuilderCache.cs" />
+    <Compile Include="LuaEngine\TestLogger.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\LuaInterface_EventObjectWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\LuaInterface_LuaConstructorWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\LuaInterface_LuaFieldWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\LuaInterface_LuaMethodWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\LuaInterface_LuaOutWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\LuaInterface_LuaPropertyWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_ArrayWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_Collections_Generic_DictionaryWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_Collections_Generic_Dictionary_KeyCollectionWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_Collections_Generic_Dictionary_ValueCollectionWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_Collections_Generic_KeyValuePairWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_Collections_Generic_ListWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_Collections_IEnumeratorWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_Collections_ObjectModel_ReadOnlyCollectionWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_DelegateWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_EnumWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_NullObjectWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_ObjectWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_StringWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\BaseType\System_TypeWrap.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaAttributes.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaBaseRef.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaBeatEvent.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaDLL.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaEvent.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaException.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaFileUtils.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaFunction.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaMatchType.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaMethodCache.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaMisc.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaStackOp.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaState.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaStatePtr.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaStatic.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaTable.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaThread.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\LuaValueType.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\ObjectPool.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\ObjectTranslator.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\ToLua.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\TypeChecker.cs" />
+    <Compile Include="LuaEngine\ToLua\Core\TypeTraits.cs" />
+    <Compile Include="LuaEngine\ToLua\Injection\LuaInjectionStation.cs" />
+    <Compile Include="LuaEngine\ToLua\Misc\LuaClient.cs" />
+    <Compile Include="LuaEngine\ToLua\Misc\LuaLooper.cs" />
+    <Compile Include="LuaEngine\ToLua\Misc\LuaProfiler.cs" />
+    <Compile Include="LuaEngine\ToLua\Misc\LuaResLoader.cs" />
+    <Compile Include="LuaEngine\ToLua\Reflection\LuaConstructor.cs" />
+    <Compile Include="LuaEngine\ToLua\Reflection\LuaField.cs" />
+    <Compile Include="LuaEngine\ToLua\Reflection\LuaMethod.cs" />
+    <Compile Include="LuaEngine\ToLua\Reflection\LuaProperty.cs" />
+    <Compile Include="LuaEngine\ToLua\Reflection\LuaReflection.cs" />
     <Compile Include="ObjectModule\AnimatorController.cs" />
     <Compile Include="ObjectModule\Attribute.cs" />
     <Compile Include="ObjectModule\BulletBase.cs" />
@@ -150,12 +223,74 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\LuaEngine\LuaEngine\LuaEngine.csproj">
-      <Project>{8c4ebf77-26b2-4fa6-ba24-9d458974e6b7}</Project>
-      <Name>LuaEngine</Name>
-    </ProjectReference>
+    <None Include="LuaEngine\ToLua\Lua\Build.bat" />
+    <None Include="LuaEngine\ToLua\Lua\cjson\util.lua" />
+    <None Include="LuaEngine\ToLua\Lua\event.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\bc.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\bcsave.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_arm.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_arm64.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_arm64be.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_mips.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_mips64.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_mips64el.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_mipsel.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_ppc.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_x64.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dis_x86.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\dump.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\p.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\v.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\vmdef.lua" />
+    <None Include="LuaEngine\ToLua\Lua\jit\zone.lua" />
+    <None Include="LuaEngine\ToLua\Lua\list.lua" />
+    <None Include="LuaEngine\ToLua\Lua\lpeg\re.lua" />
+    <None Include="LuaEngine\ToLua\Lua\ltn12.lua" />
+    <None Include="LuaEngine\ToLua\Lua\mime.lua" />
+    <None Include="LuaEngine\ToLua\Lua\misc\functions.lua" />
+    <None Include="LuaEngine\ToLua\Lua\misc\strict.lua" />
+    <None Include="LuaEngine\ToLua\Lua\misc\utf8.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\containers.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\decoder.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\descriptor.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\encoder.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\listener.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\protobuf.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\text_format.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\type_checkers.lua" />
+    <None Include="LuaEngine\ToLua\Lua\protobuf\wire_format.lua" />
+    <None Include="LuaEngine\ToLua\Lua\slot.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket\ftp.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket\headers.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket\http.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket\mbox.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket\smtp.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket\tp.lua" />
+    <None Include="LuaEngine\ToLua\Lua\socket\url.lua" />
+    <None Include="LuaEngine\ToLua\Lua\System\coroutine.lua" />
+    <None Include="LuaEngine\ToLua\Lua\System\Injection\InjectionBridgeInfo.lua" />
+    <None Include="LuaEngine\ToLua\Lua\System\Injection\LuaInjectionBus.lua" />
+    <None Include="LuaEngine\ToLua\Lua\System\Injection\LuaInjectionStation.lua" />
+    <None Include="LuaEngine\ToLua\Lua\System\Reflection\BindingFlags.lua" />
+    <None Include="LuaEngine\ToLua\Lua\System\Timer.lua" />
+    <None Include="LuaEngine\ToLua\Lua\System\ValueType.lua" />
+    <None Include="LuaEngine\ToLua\Lua\tolua.lua" />
+    <None Include="LuaEngine\ToLua\Lua\typeof.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Bounds.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Color.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\LayerMask.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Mathf.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Plane.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Profiler.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Quaternion.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Ray.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\RaycastHit.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Time.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Touch.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Vector2.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Vector3.lua" />
+    <None Include="LuaEngine\ToLua\Lua\UnityEngine\Vector4.lua" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Properties\Resources.resx">
@@ -175,6 +310,13 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="LuaEngine\ToLua\Injection\InjectionBlackList.txt" />
+    <Content Include="LuaEngine\ToLua\Injection\InjectionBridgeEditorInfo.xml" />
+    <Content Include="LuaEngine\ToLua\Injection\LuaInjectionSkipPaths.txt" />
+    <Content Include="LuaEngine\ToLua\readme.txt" />
+  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>xcopy /e /r /y $(SolutionDir)data $(TargetDir)</PostBuildEvent>

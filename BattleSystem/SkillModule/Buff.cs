@@ -123,8 +123,11 @@ namespace BattleSystem.SkillModule
             this.isIndividual = config.isIndividual;
             this.isClearable = config.isClearable;
             this.isNegative = config.isNegative;
-            this.mEffects = new BuffEffect[config.BuffEffect.Length];
-            for (int i = 0; i < config.BuffEffect.Length; ++i)
+            if (config.BuffEffect != null)
+                this.mEffects = new BuffEffect[config.BuffEffect.Length];
+            else
+                this.mEffects = new BuffEffect[0];
+            for (int i = 0; i < this.mEffects.Length; ++i)
             {
                 this.mEffects[i] = new BuffEffect(config.BuffEffect[i]);
             }
@@ -421,18 +424,18 @@ namespace BattleSystem.SkillModule
         public virtual int OnUnitWillHurt(UnitBase injured, UnitBase assailant, int value, DamageType dt, bool isAttack)
         {
             int offset = 0;
-            if (mOnUnitWillDieHandle != null)
+            if (mOnUnitWillHurtHandle != null)
             {
-                mOnUnitWillDieHandle.BeginPCall();
-                mOnUnitWillDieHandle.Push(mLuaBuff);
-                mOnUnitWillDieHandle.Push(injured);
-                mOnUnitWillDieHandle.Push(assailant);
-                mOnUnitWillDieHandle.Push(value);
-                mOnUnitWillDieHandle.Push(dt);
-                mOnUnitWillDieHandle.Push(isAttack);
-                mOnUnitWillDieHandle.PCall();
-                offset = (int)mOnUnitWillDieHandle.CheckNumber();
-                mOnUnitWillDieHandle.EndPCall();
+                mOnUnitWillHurtHandle.BeginPCall();
+                mOnUnitWillHurtHandle.Push(mLuaBuff);
+                mOnUnitWillHurtHandle.Push(injured);
+                mOnUnitWillHurtHandle.Push(assailant);
+                mOnUnitWillHurtHandle.Push(value);
+                mOnUnitWillHurtHandle.Push(dt);
+                mOnUnitWillHurtHandle.Push(isAttack);
+                mOnUnitWillHurtHandle.PCall();
+                offset = (int)mOnUnitWillHurtHandle.CheckNumber();
+                mOnUnitWillHurtHandle.EndPCall();
             }
             else
                 throw new Exception("undefined OnUnitWillDieHandle");

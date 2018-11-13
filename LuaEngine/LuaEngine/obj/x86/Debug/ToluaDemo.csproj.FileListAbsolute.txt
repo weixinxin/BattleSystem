@@ -1,8 +1,0 @@
-G:\GitHub\ToluaDemo\ToluaDemo\bin\x86\Debug\tolua.dll
-G:\GitHub\ToluaDemo\ToluaDemo\bin\x86\Debug\ToluaDemo.exe
-G:\GitHub\ToluaDemo\ToluaDemo\bin\x86\Debug\ToluaDemo.pdb
-G:\GitHub\ToluaDemo\ToluaDemo\bin\x86\Debug\CString.dll
-G:\GitHub\ToluaDemo\ToluaDemo\obj\x86\Debug\ToluaDemo.exe
-G:\GitHub\ToluaDemo\ToluaDemo\obj\x86\Debug\ToluaDemo.pdb
-G:\GitHub\ToluaDemo\ToluaDemo\bin\x86\Debug\ToluaDemo.exe.config
-G:\GitHub\ToluaDemo\ToluaDemo\obj\x86\Debug\ToluaDemo.csprojResolveAssemblyReference.cache

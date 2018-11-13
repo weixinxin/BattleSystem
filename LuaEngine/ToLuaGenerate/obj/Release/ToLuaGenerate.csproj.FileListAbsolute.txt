@@ -1,9 +1,0 @@
-E:\LuaEngine\ToLuaGenerate\obj\Release\ToLuaGenerate.csprojResolveAssemblyReference.cache
-E:\LuaEngine\ToLuaGenerate\bin\Release\tolua.dll
-E:\LuaEngine\ToLuaGenerate\bin\Release\ToLuaGenerate.exe
-E:\LuaEngine\ToLuaGenerate\bin\Release\ToLuaGenerate.pdb
-E:\LuaEngine\ToLuaGenerate\bin\Release\LuaEngine.dll
-E:\LuaEngine\ToLuaGenerate\bin\Release\CString.dll
-E:\LuaEngine\ToLuaGenerate\bin\Release\LuaEngine.pdb
-E:\LuaEngine\ToLuaGenerate\obj\Release\ToLuaGenerate.exe
-E:\LuaEngine\ToLuaGenerate\obj\Release\ToLuaGenerate.pdb

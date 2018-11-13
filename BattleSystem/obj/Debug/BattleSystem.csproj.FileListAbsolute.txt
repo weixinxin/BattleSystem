@@ -15,10 +15,8 @@ G:\BattleSystem\BattleSystem\obj\Debug\BattleSystem.exe
 G:\BattleSystem\BattleSystem\obj\Debug\BattleSystem.pdb
 G:\BattleSystem\BattleSystem\bin\Debug\BattleSystem.exe
 G:\BattleSystem\BattleSystem\bin\Debug\BattleSystem.pdb
-G:\BattleSystem\BattleSystem\obj\Debug\BattleSystem.csprojResolveAssemblyReference.cache
 G:\BattleSystem\bin\Debug\BattleSystem.exe.config
 G:\BattleSystem\bin\Debug\BattleSystem.exe
 G:\BattleSystem\bin\Debug\BattleSystem.pdb
-G:\BattleSystem\bin\Debug\tolua.dll
 G:\BattleSystem\BattleSystem\obj\Debug\BattleSystem.Properties.Resources.resources
 G:\BattleSystem\BattleSystem\obj\Debug\BattleSystem.csproj.GenerateResource.Cache
